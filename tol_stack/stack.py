@@ -30,20 +30,28 @@ class Part:
         self.refresh()
 
     def refresh(self):
+        """
+        Re-calculates the distribution
+
+        :return: None
+        """
         if self._distribution == 'norm':
             if self._limits is not None:
                 if self._lower_value is not None:
                     self._logger.warning('When using the normal distribution the "lower_tolerance" parameter is ignored')
                 self.values = distributions.norm_screened(
                     loc=self._nominal_value,
-                    scale=(self._upper_value - self._nominal_value) / 3, size=self._size)
+                    scale=(self._upper_value - self._nominal_value) / 3,
+                    size=self._size,
+                    limits=self._limits
+                )
             else:
                 self.values = distributions.norm(
                     loc=self._nominal_value,
                     scale=(self._upper_value - self._nominal_value) / 3, size=self._size
                 )
         else:
-            raise ValueError('distribution appears to be invalid')
+            raise ValueError(f'distribution "{self._distribution}" appears to be invalid')
 
     def show_dist(self, **kwargs):
         """
@@ -90,6 +98,9 @@ class StackPath:
                 raise ValueError('part sample sizes do not match, cannot perform valid comparison')
 
         self._parts.append(part)
+
+    def retrieve_parts(self):
+        return self._parts.copy()
 
     def analyze(self):
         for part in self._parts:
@@ -174,23 +185,26 @@ if __name__ == '__main__':
 
     part1 = Part(
         name='part1',
-        nominal_value=2.05,
+        nominal_value=1.95,
         upper_tolerance=0.05,
         size=size
     )
 
     part2 = Part(
-        name='part1',
+        name='part2',
         nominal_value=1.0,
-        upper_tolerance=0.03,
-        size=size
+        upper_tolerance=0.1,
+        size=size,
+        limits=(0.98, 1.02)
     )
 
-    sp = StackPath(path_type='min', min_value=4.0)
+    sp = StackPath(path_type='max', max_value=4.0)
     sp.add_part(part0)
     sp.add_part(part1)
     sp.add_part(part2)
 
     sp.analyze()
+
+    part2.show_dist(density=True, bins=101)
 
     sp.show_dist(bins=31)
