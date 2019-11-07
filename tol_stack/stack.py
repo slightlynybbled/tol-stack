@@ -1,6 +1,7 @@
 import logging
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import tol_stack.distributions as distributions
 
@@ -106,19 +107,11 @@ class StackPath:
         for part in self._parts:
             part.refresh()
 
-        if self._path_type in ['circuit', 'max', 'min']:
-            finals = []
-            for i in range(len(self._parts[0].values)):
-                final = 0.0
-                for part in self._parts:
-                    final += part.values[i]
+        finals = np.zeros(len(self._parts[0].values))
+        for part in self._parts:
+            finals += part.values
 
-                finals.append(final)
-
-            self._stackups = finals
-
-        else:
-            raise NotImplementedError(f'path type "{self._path_type}" is not currently implemented')
+        self._stackups = finals
 
     def show_dist(self, **kwargs):
         fig = plt.figure()
