@@ -14,8 +14,13 @@ class Part:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
 
+        valid_distributions = ['norm', 'norm-screened', 'norm-notched', 'norm-lt', 'norm-gt']
+        if distribution.lower() not in valid_distributions:
+            raise ValueError(f'unexpected distribution "{distribution}"; '
+                             f'distribution must be in "{valid_distributions}"')
+
         self.name = name
-        self._distribution = distribution
+        self._distribution = distribution.lower()
         self._nominal_value = nominal_value
         self._upper_value = self._nominal_value + upper_tolerance
         try:
@@ -107,11 +112,11 @@ class StackPath:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
 
-        valid_path_types = [
-            'circuit', 'max', 'min', 'radial'
-        ]
+        valid_path_types = self.retrieve_stackup_path_types()
         if path_type not in valid_path_types:
             raise ValueError(f'"path_type" must be in f{valid_path_types}')
+
+        # todo: implement all stackup path types and remove this
         if path_type not in ['circuit', 'max', 'min']:
             raise NotImplementedError('the specified path type is on the roadmap, but not currently supported')
 
@@ -134,6 +139,12 @@ class StackPath:
                 raise ValueError('part sample sizes do not match, cannot perform valid comparison')
 
         self._parts.append(part)
+
+    @staticmethod
+    def retrieve_stackup_path_types():
+        return [
+            'circuit', 'max', 'min',  # 'radial'
+        ]
 
     def retrieve_parts(self, safe=True):
         """
@@ -222,6 +233,8 @@ if __name__ == '__main__':
         name='part0',
         nominal_value=1.0,
         upper_tolerance=0.03,
+        distribution='norm-lt',
+        limits=1.02,
         size=size
     )
 
@@ -229,6 +242,8 @@ if __name__ == '__main__':
         name='part1',
         nominal_value=2.0,
         upper_tolerance=0.05,
+        distribution='norm-lt',
+        limits=2.02,
         size=size
     )
 
@@ -246,8 +261,8 @@ if __name__ == '__main__':
 
     sp.analyze()
 
-    part0.show_dist(density=True, bins=101)
-    part1.show_dist(density=True, bins=101)
-    part2.show_dist(density=True, bins=101)
+    part0.show_dist(density=True, bins=31)
+    part1.show_dist(density=True, bins=31)
+    part2.show_dist(density=True, bins=31)
 
     sp.show_dist(bins=31)
