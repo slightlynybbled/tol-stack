@@ -123,14 +123,13 @@ class StackPath:
         if self._path_type == 'circuit':
             ax.set_xlabel('sum of gaps between parts')
 
-            interference = [v for v in self._stackups if v < 0]
+            interference = [v for v in self._stackups if v > 0]
             if len(interference) > 0:
                 interference_percent = 100.0 * len(interference) / len(self._stackups)
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(x0, 0.0, color='red', zorder=-2, alpha=0.1)
-                ax.axvline(x0, color='red', zorder=-1)
+                ax.axvspan(0.0, x1, color='red', zorder=-2, alpha=0.1)
                 ax.axvline(0.0, color='red', zorder=-1)
                 ax.text(x=x0*0.9, y=((y1-y0) * 0.9), s=f'interference on {interference_percent:.02f}%', color='red')
 
@@ -178,26 +177,27 @@ if __name__ == '__main__':
 
     part1 = Part(
         name='part1',
-        nominal_value=1.95,
+        nominal_value=2.0,
         upper_tolerance=0.05,
         size=size
     )
 
     part2 = Part(
         name='part2',
-        nominal_value=1.0,
-        upper_tolerance=0.1,
-        size=size,
-        limits=(0.98, 1.02)
+        nominal_value=-3.05,
+        upper_tolerance=0.05,
+        size=size
     )
 
-    sp = StackPath(path_type='max', max_value=4.0)
+    sp = StackPath()
     sp.add_part(part0)
     sp.add_part(part1)
     sp.add_part(part2)
 
     sp.analyze()
 
+    part0.show_dist(density=True, bins=101)
+    part1.show_dist(density=True, bins=101)
     part2.show_dist(density=True, bins=101)
 
     sp.show_dist(bins=31)

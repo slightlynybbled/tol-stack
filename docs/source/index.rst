@@ -12,6 +12,8 @@ Tolerance Analysis for Busy People
    :maxdepth: 2
    :caption: Contents:
 
+   installation.rst
+   usage.rst
 
 
 Indices and tables
