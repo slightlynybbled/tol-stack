@@ -9,7 +9,7 @@ import tol_stack.distributions as distributions
 class Part:
     def __init__(self, name: str,
                  nominal_value: float, upper_tolerance: float, lower_tolerance: float = None,
-                 distribution: str = 'norm', size: int = 1000, limits: tuple = None,
+                 distribution: str = 'norm', size: int = 1000, limits: (tuple, float) = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -37,20 +37,49 @@ class Part:
         :return: None
         """
         if self._distribution == 'norm':
-            if self._limits is not None:
-                if self._lower_value is not None:
-                    self._logger.warning('When using the normal distribution the "lower_tolerance" parameter is ignored')
-                self.values = distributions.norm_screened(
-                    loc=self._nominal_value,
-                    scale=(self._upper_value - self._nominal_value) / 3,
-                    size=self._size,
-                    limits=self._limits
-                )
+            self.values = distributions.norm(
+                loc=self._nominal_value,
+                scale=(self._upper_value - self._nominal_value) / 3, size=self._size
+            )
+        elif self._distribution == 'norm-screened':
+            self.values = distributions.norm_screened(
+                loc=self._nominal_value,
+                scale=(self._upper_value - self._nominal_value) / 3,
+                size=self._size,
+                limits=self._limits
+            )
+        elif self._distribution == 'norm-notched':
+            self.values = distributions.norm_notched(
+                loc=self._nominal_value,
+                scale=(self._upper_value - self._nominal_value) / 3,
+                size=self._size,
+                limits=self._limits
+            )
+        elif self._distribution == 'norm-lt':
+            if isinstance(self._limits, tuple):
+                limit, *_ = self._limits
             else:
-                self.values = distributions.norm(
-                    loc=self._nominal_value,
-                    scale=(self._upper_value - self._nominal_value) / 3, size=self._size
-                )
+                limit = self._limits
+
+            self.values = distributions.norm_lt(
+                loc=self._nominal_value,
+                scale=(self._upper_value - self._nominal_value) / 3,
+                size=self._size,
+                limit=limit
+            )
+        elif self._distribution == 'norm-gt':
+            if isinstance(self._limits, tuple):
+                limit, *_ = self._limits
+            else:
+                limit = self._limits
+
+            self.values = distributions.norm_gt(
+                loc=self._nominal_value,
+                scale=(self._upper_value - self._nominal_value) / 3,
+                size=self._size,
+                limit=limit
+            )
+
         else:
             raise ValueError(f'distribution "{self._distribution}" appears to be invalid')
 
