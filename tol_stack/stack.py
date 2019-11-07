@@ -123,16 +123,37 @@ class StackPath:
         self._min_value = min_value
 
     def add_part(self, part: Part):
+        """
+        Adds a part to the stack path.
+
+        :param part: An instance of ``Part``
+        :return: None
+        """
         if self._parts:
             if len(part.values) != len(self._parts[0].values):
                 raise ValueError('part sample sizes do not match, cannot perform valid comparison')
 
         self._parts.append(part)
 
-    def retrieve_parts(self):
-        return self._parts.copy()
+    def retrieve_parts(self, safe=True):
+        """
+        Retrieves a safe copy of the parts to work with.
+
+        :param safe: if False, will return a list of the part instances; if True, \
+        will return a copied list of the instances
+        :return:
+        """
+        if safe:
+            return self._parts.copy()
+
+        return self._parts
 
     def analyze(self):
+        """
+        Refreshes the parts and ddds up all of the distributions of the parts.
+
+        :return: None
+        """
         for part in self._parts:
             part.refresh()
 
