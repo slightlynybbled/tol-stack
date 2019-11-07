@@ -52,3 +52,13 @@ the apparent interference should be apparent.
 
 .. image::
    images/screenshot-circuit.png
+
+Max Height Stackup
+------------------
+
+A maximum height stackup will... (todo)
+
+Min Height Stackup
+------------------
+
+A maximum height stackup will... (todo)
