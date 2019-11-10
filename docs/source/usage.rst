@@ -44,7 +44,7 @@ Now that we know what the tolerance stackup looks like, we can start coding.  Fi
    from tol_stack import Part, StackPath
 
 For the moment, assume that the distribution of the part variance is normal.  We will discuss other
-distributions that may commonly be encountered in manufacturing processes in another section.  We
+:ref:`distributions` that may commonly be encountered in manufacturing processes in another section.  We
 create each ``Part`` with the nominal dimensions and with some tolerance value.
 
 .. code-block:: python
