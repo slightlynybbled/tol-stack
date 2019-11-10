@@ -190,9 +190,9 @@ class StackPath:
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(0.0, x1, color='red', zorder=-2, alpha=0.1)
-                ax.axvline(0.0, color='red', zorder=-1)
-                ax.text(x=x0*0.9, y=((y1-y0) * 0.9), s=f'interference on {interference_percent:.02f}%', color='red')
+                ax.axvline(0.0, color='red', linewidth=5, zorder=-1)
+                ax.text(x=x1*0.9, y=((y1-y0) * 0.9), s=f'{interference_percent:.02f}%', color='red', horizontalalignment='right')
+                ax.text(x=x0*0.9, y=((y1-y0) * 0.9), s=f'{100.0-interference_percent:.02f}%', color='red')
 
         elif self._path_type == 'max':
             ax.set_xlabel('distribution of total height')
@@ -261,8 +261,8 @@ if __name__ == '__main__':
 
     sp.analyze()
 
-    part0.show_dist(density=True, bins=31)
-    part1.show_dist(density=True, bins=31)
-    part2.show_dist(density=True, bins=31)
+    #part0.show_dist(density=True, bins=31)
+    #part1.show_dist(density=True, bins=31)
+    #part2.show_dist(density=True, bins=31)
 
     sp.show_dist(bins=31)
