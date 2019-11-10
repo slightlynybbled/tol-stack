@@ -106,6 +106,15 @@ class Part:
 
 
 class StackPath:
+    """
+    The stack path analysis class.
+
+    :param path_type: the path type as a string ('circuit', 'max', 'min', or 'radial')
+    :param max_value: a floating-point number required when the ``path_type`` is 'max'
+    :param min_value: a floating-point number required when the ``path_type`` is 'min'
+    :param loglevel: the logging level that is to be implemented for the class
+
+    """
     def __init__(self, path_type: str = 'circuit',
                  max_value: float = None, min_value: float = None,
                  loglevel=logging.INFO):
@@ -143,7 +152,7 @@ class StackPath:
     @staticmethod
     def retrieve_stackup_path_types():
         return [
-            'circuit', 'max', 'min',  # 'radial'
+            'circuit', 'max', 'min',  'radial'
         ]
 
     def retrieve_parts(self, safe=True):
@@ -152,7 +161,7 @@ class StackPath:
 
         :param safe: if False, will return a list of the part instances; if True, \
         will return a copied list of the instances
-        :return:
+        :return: a list of ``Parts``
         """
         if safe:
             return self._parts.copy()
