@@ -30,10 +30,86 @@ Starting at the reference, walk around one step at a time adding the value and t
 a length of -3.0.
 
 Once the user has gotten to this point in the tolerance stack using ``tol-stack``, the distribution and
-the apparent interference should be apparent.
+the interference should be apparent.  Assuming "line-to-line" values, all of these will add up to 0.0.
 
 .. image::
    images/circuit-animation.gif
+
+Now that we know what the tolerance stackup looks like, we can start coding.  First, import the
+``tol_stack`` package components ``Part`` and ``StackPath``.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 1
+
+   from tol_stack import Part, StackPath
+
+For the moment, assume that the distribution of the part variance is normal.  We will discuss other
+distributions that may commonly be encountered in manufacturing processes in another section.  We
+create each ``Part`` with the nominal dimensions and with some tolerance value.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 3, 5, 6, 7
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+
+At this point, if we wanted to see the distribution of the part variation, we could call the
+``.show_dist()`` method of ``Part``.  This parameter takes all keyword arguments accepted by
+`matplotlib.pyplot.Axes.hist() <https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.hist.html>`_.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 9
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+
+   p1.show_dist(density=True, bins=31)
+
+Results in:
+
+.. image::
+   images/part-distribution-normal.png
+
+Finally, we create the ``StackPath`` and add each part to it, then run the ``analyze()`` method.  Once the analysis
+is complete, we can call the ``.show_dist()`` method of the ``StackPath`` to show the percentage of units that are
+expected to fall out of tolerance.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 9-11, 13, 14
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+
+   sp.add_part(part0)
+   sp.add_part(part1)
+   sp.add_part(part2)
+
+   sp.analyze()
+   sp.show_dist(bins=31)
+
+.. image::
+   images/screenshot-circuit.png
+
+Based on the image, 50% of units are expected to crash!
 
 Max Height Stackup
 ------------------
