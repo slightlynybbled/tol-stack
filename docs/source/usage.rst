@@ -32,8 +32,7 @@ a length of -3.0.
 Once the user has gotten to this point in the tolerance stack using ``tol-stack``, the distribution and
 the interference should be apparent.  Assuming "line-to-line" values, all of these will add up to 0.0.
 
-.. image::
-   images/circuit-animation.gif
+.. image:: images/circuit-animation.gif
 
 Now that we know what the tolerance stackup looks like, we can start coding.  First, import the
 ``tol_stack`` package components ``Part`` and ``StackPath``.
@@ -78,8 +77,7 @@ At this point, if we wanted to see the distribution of the part variation, we co
 
    p1.show_dist(density=True, bins=31)
 
-.. image::
-   images/part-distribution-normal.png
+.. image:: images/part-distribution-normal.png
 
 Finally, we create the ``StackPath`` and add each part to it, then run the ``analyze()`` method.  Once the analysis
 is complete, we can call the ``.show_dist()`` method of the ``StackPath`` to show the percentage of units that are
@@ -104,8 +102,7 @@ expected to fall out of tolerance.
    sp.analyze()
    sp.show_dist(bins=31)
 
-.. image::
-   images/screenshot-circuit.png
+.. image:: images/screenshot-circuit.png
 
 Based on the image, 50% of units are expected to crash!
 
@@ -130,8 +127,7 @@ Let's improve this situation.  We will change the 3.0 to 3.05 to see if the stac
    sp.analyze()
    sp.show_dist(bins=31)
 
-.. image::
-   images/screenshot-circuit-1.png
+.. image:: images/screenshot-circuit-1.png
 
 Our final distribution now shows 97% of our parts will be OK.  Now we are in a realm in which we may want to, again,
 change the dimension or we may wish to tighten one or more tolerance values.  One item of note is that the horizontal

@@ -14,6 +14,7 @@ Tolerance Analysis for Busy People
 
    installation.rst
    usage.rst
+   distributions.rst
 
 
 Indices and tables
