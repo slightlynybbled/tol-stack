@@ -78,8 +78,6 @@ At this point, if we wanted to see the distribution of the part variation, we co
 
    p1.show_dist(density=True, bins=31)
 
-Results in:
-
 .. image::
    images/part-distribution-normal.png
 
@@ -110,6 +108,36 @@ expected to fall out of tolerance.
    images/screenshot-circuit.png
 
 Based on the image, 50% of units are expected to crash!
+
+Let's improve this situation.  We will change the 3.0 to 3.05 to see if the stackup changes.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 7
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.05, upper_tolerance=0.05, size=size)
+
+   sp.add_part(part0)
+   sp.add_part(part1)
+   sp.add_part(part2)
+
+   sp.analyze()
+   sp.show_dist(bins=31)
+
+.. image::
+   images/screenshot-circuit-1.png
+
+Our final distribution now shows 97% of our parts will be OK.  Now we are in a realm in which we may want to, again,
+change the dimension or we may wish to tighten one or more tolerance values.  One item of note is that the horizontal
+axis is, both, positive and negative.  The user will be defining the positive and negative in each scenario.  In the
+shown case, the "good" side is negative.  If we had defined the 3.0 dimension as positive and the other two as
+negative, then the situation would have reversed.
 
 Max Height Stackup
 ------------------
