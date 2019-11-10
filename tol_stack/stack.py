@@ -238,11 +238,11 @@ class StackPath:
 
 if __name__ == '__main__':
     size = 100000
+
     part0 = Part(
         name='part0',
         nominal_value=1.0,
         upper_tolerance=0.03,
-        distribution='norm-lt',
         limits=1.02,
         size=size
     )
@@ -251,14 +251,13 @@ if __name__ == '__main__':
         name='part1',
         nominal_value=2.0,
         upper_tolerance=0.05,
-        distribution='norm-lt',
         limits=2.02,
         size=size
     )
 
     part2 = Part(
         name='part2',
-        nominal_value=-3.05,
+        nominal_value=-3.00,
         upper_tolerance=0.05,
         size=size
     )
