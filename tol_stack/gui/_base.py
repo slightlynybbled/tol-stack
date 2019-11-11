@@ -11,5 +11,5 @@ class BaseFrame(tk.Frame):
         self._logger.setLevel(loglevel)
 
         self._parent = parent
-        super().__init__(self._parent, **kwargs)
+        super().__init__(self._parent, padx=3, **kwargs)
 
