@@ -7,8 +7,20 @@ import tol_stack.distributions as distributions
 
 
 class Part:
+    """
+    Represents a part, complete with tolerances as defined by the distributions.
+
+    :param name: a string representing the part
+    :param nominal_value: the nominal value of the dimension
+    :param tolerance: the tolerance of the part
+    :param distribution: the distribution of the dimension
+    :param size: the number of samples to generate
+    :param limits: the limits of the distribution; if there are two limits on the distribution, then \
+    there are two values to be passed as a tuple; else, if the distribution is expecting a single value, \
+    then this value will be a float
+    """
     def __init__(self, name: str,
-                 nominal_value: float, upper_tolerance: float, lower_tolerance: float = None,
+                 nominal_value: float, tolerance: float,
                  distribution: str = 'norm', size: int = 1000, limits: (tuple, float) = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -22,11 +34,7 @@ class Part:
         self.name = name
         self._distribution = distribution.lower()
         self._nominal_value = nominal_value
-        self._upper_value = self._nominal_value + upper_tolerance
-        try:
-            self._lower_value = self._nominal_value - lower_tolerance
-        except TypeError:
-            self._lower_value = None
+        self._tolerance = self._nominal_value + abs(tolerance)
 
         self._limits = limits
         self._size = size
@@ -37,26 +45,26 @@ class Part:
 
     def refresh(self):
         """
-        Re-calculates the distribution
+        Re-calculates the distribution.
 
         :return: None
         """
         if self._distribution == 'norm':
             self.values = distributions.norm(
                 loc=self._nominal_value,
-                scale=(self._upper_value - self._nominal_value) / 3, size=self._size
+                scale=(self._tolerance - self._nominal_value) / 3, size=self._size
             )
         elif self._distribution == 'norm-screened':
             self.values = distributions.norm_screened(
                 loc=self._nominal_value,
-                scale=(self._upper_value - self._nominal_value) / 3,
+                scale=(self._tolerance - self._nominal_value) / 3,
                 size=self._size,
                 limits=self._limits
             )
         elif self._distribution == 'norm-notched':
             self.values = distributions.norm_notched(
                 loc=self._nominal_value,
-                scale=(self._upper_value - self._nominal_value) / 3,
+                scale=(self._tolerance - self._nominal_value) / 3,
                 size=self._size,
                 limits=self._limits
             )
@@ -68,7 +76,7 @@ class Part:
 
             self.values = distributions.norm_lt(
                 loc=self._nominal_value,
-                scale=(self._upper_value - self._nominal_value) / 3,
+                scale=(self._tolerance - self._nominal_value) / 3,
                 size=self._size,
                 limit=limit
             )
@@ -80,7 +88,7 @@ class Part:
 
             self.values = distributions.norm_gt(
                 loc=self._nominal_value,
-                scale=(self._upper_value - self._nominal_value) / 3,
+                scale=(self._tolerance - self._nominal_value) / 3,
                 size=self._size,
                 limit=limit
             )
@@ -184,6 +192,12 @@ class StackPath:
         self._stackups = finals
 
     def show_dist(self, **kwargs):
+        """
+        Shows the distribution for the part on a matplotlib plot.
+
+        :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
+        :return: None
+        """
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.hist(self._stackups, **kwargs)
@@ -242,7 +256,7 @@ if __name__ == '__main__':
     part0 = Part(
         name='part0',
         nominal_value=1.0,
-        upper_tolerance=0.03,
+        tolerance=0.03,
         limits=1.02,
         size=size
     )
@@ -250,7 +264,7 @@ if __name__ == '__main__':
     part1 = Part(
         name='part1',
         nominal_value=2.0,
-        upper_tolerance=0.05,
+        tolerance=0.05,
         limits=2.02,
         size=size
     )
@@ -258,7 +272,7 @@ if __name__ == '__main__':
     part2 = Part(
         name='part2',
         nominal_value=-3.00,
-        upper_tolerance=0.05,
+        tolerance=0.05,
         size=size
     )
 

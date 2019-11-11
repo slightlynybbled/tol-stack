@@ -45,40 +45,11 @@ class StackupFrame(BaseFrame):
         r += 1
         self._stack_type_var = tk.StringVar()
         self._stack_type_var.set(path_types[0])
-        self._stack_type_var.trace('w', callback=self._on_path_type_change)
+        #self._stack_type_var.trace('w', callback=self._on_path_type_change)
 
         tk.Label(self, text='Select Stack Type:').grid(row=r, column=0, sticky='w')
         self._stack_type_cb = ttk.Combobox(self, textvariable=self._stack_type_var, values=path_types)
         self._stack_type_cb.grid(row=r, column=1, sticky='ew')
-
-        r += 1
-        self._canvas = tk.Canvas(self)
-        self._canvas.grid(row=r, column=0, columnspan=2, sticky='new')
-
-        self._img = None
-
-        self.redraw()
-
-    def _on_path_type_change(self, *args):
-        self.redraw()
-
-    def redraw(self):
-        self._canvas.delete('all')
-
-        stack_type = self._stack_type_var.get()
-        if stack_type == 'circuit':
-            self._img = tk.PhotoImage(data=images.tolerance_circuit_3)
-        elif stack_type == 'min':
-            self._img = tk.PhotoImage(data=images.tolerance_min)
-        elif stack_type == 'max':
-            self._img = tk.PhotoImage(data=images.tolerance_max)
-
-        self._canvas.create_image(0, 0, anchor='nw', image=self._img)
-
-
-
-
-
 
 
 class PartDefinitionsFrame(BaseFrame):
