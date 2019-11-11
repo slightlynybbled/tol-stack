@@ -43,12 +43,16 @@ class Part:
 
         self.refresh()
 
-    def refresh(self):
+    def refresh(self, size: int = None):
         """
         Re-calculates the distribution.
 
+        :param size: Allows external software to override the size
         :return: None
         """
+        if size is not None:
+            self._size = size
+
         if self._distribution == 'norm':
             self.values = distributions.norm(
                 loc=self._nominal_value,
