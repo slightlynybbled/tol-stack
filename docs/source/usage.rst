@@ -95,9 +95,10 @@ expected to fall out of tolerance.
    p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
    p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
 
-   sp.add_part(part0)
-   sp.add_part(part1)
-   sp.add_part(part2)
+   sp = StackPath()
+   sp.add_part(p1)
+   sp.add_part(p2)
+   sp.add_part(p3)
 
    sp.analyze()
    sp.show_dist(bins=31)
@@ -120,9 +121,10 @@ Let's improve this situation.  We will change the 3.0 to 3.05 to see if the stac
    p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
    p3 = Part(name='part3', nominal_value=-3.05, upper_tolerance=0.05, size=size)
 
-   sp.add_part(part0)
-   sp.add_part(part1)
-   sp.add_part(part2)
+   sp = StackPath()
+   sp.add_part(p1)
+   sp.add_part(p2)
+   sp.add_part(p3)
 
    sp.analyze()
    sp.show_dist(bins=31)
@@ -138,7 +140,71 @@ negative, then the situation would have reversed.
 Max Height Stackup
 ------------------
 
-A maximum height stackup will... (todo)
+A maximum height stackup will help ensure that the stackup will not exceed a maximum height.
+
+.. image:: images/tolerance-max.png
+
+Creating the maximum height stackup is much like creating the circuit stackup.  THe crucial difference is that
+all of the part values are positive and the ``StackPath`` is supplied with a ``path_type='max'`` parameter.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 9
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p0 = Part(name='part0', nominal_value=0.97, upper_tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=0.97, upper_tolerance=0.05, size=size)
+
+   sp = StackPath(path_type='max', max_value=4.0)
+   sp.add_part(p0)
+   sp.add_part(p1)
+   sp.add_part(p2)
+
+   sp.analyze()
+   sp.show_dist(bins=31)
+
+When the parts 0, 1, and 2 are stacked up, the chances that they protrude into the red zone are shown
+in the histogram.
+
+.. image:: images/screenshot-max.png
+
+In this case, about 1% of the parts will end up over the maximum value.  We will use this as an opportunity
+to show an alternate distribution, which is the ``norm-lt`` distribution.  When specifying part 0 and part 2,
+we specify the ``distribution='norm-lt'`` to indicate that manufacturing has implemented some sort of pass/fail
+gage.  We must also specify the limit of the pass/fail gage.
+
+.. code-block:: python
+   :linenos:
+   :emphasize-lines: 6, 9
+
+   from tol_stack import Part, StackPath
+
+   size = 100000  # denotes size of the simulation
+
+   p0 = Part(name='part0', nominal_value=0.97, upper_tolerance=0.05, size=size,
+             distribution='norm-lt', limits=0.99)
+   p1 = Part(name='part1', nominal_value=2.0, upper_tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=0.97, upper_tolerance=0.05, size=size,
+             distribution='norm-lt', limits=0.99)
+
+   sp = StackPath(path_type='max', max_value=4.0)
+   sp.add_part(p0)
+   sp.add_part(p1)
+   sp.add_part(p2)
+
+   sp.analyze()
+   sp.show_dist(bins=31)
+
+.. image:: images/part-dist-lt.png
+
+.. image:: images/stack-dist-max.png
+
+You can confidently state that the screening that manufacturing has implemented is effective!
+
 
 Min Height Stackup
 ------------------
