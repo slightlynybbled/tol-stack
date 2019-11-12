@@ -55,9 +55,9 @@ create each ``Part`` with the nominal dimensions and with some tolerance value.
 
    size = 100000  # denotes size of the simulation
 
-   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=1.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, tolerance=0.05, size=size)
 
 At this point, if we wanted to see the distribution of the part variation, we could call the
 ``.show_dist()`` method of ``Part``.  This parameter takes all keyword arguments accepted by
@@ -71,9 +71,9 @@ At this point, if we wanted to see the distribution of the part variation, we co
 
    size = 100000  # denotes size of the simulation
 
-   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=1.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, tolerance=0.05, size=size)
 
    p1.show_dist(density=True, bins=31)
 
@@ -91,9 +91,9 @@ expected to fall out of tolerance.
 
    size = 100000  # denotes size of the simulation
 
-   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p3 = Part(name='part3', nominal_value=-3.0, upper_tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=1.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.0, tolerance=0.05, size=size)
 
    sp = StackPath()
    sp.add_part(p1)
@@ -117,9 +117,9 @@ Let's improve this situation.  We will change the 3.0 to 3.05 to see if the stac
 
    size = 100000  # denotes size of the simulation
 
-   p1 = Part(name='part1', nominal_value=1.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p3 = Part(name='part3', nominal_value=-3.05, upper_tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=1.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=2.0, tolerance=0.05, size=size)
+   p3 = Part(name='part3', nominal_value=-3.05, tolerance=0.05, size=size)
 
    sp = StackPath()
    sp.add_part(p1)
@@ -155,9 +155,9 @@ all of the part values are positive and the ``StackPath`` is supplied with a ``p
 
    size = 100000  # denotes size of the simulation
 
-   p0 = Part(name='part0', nominal_value=0.97, upper_tolerance=0.05, size=size)
-   p1 = Part(name='part1', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=0.97, upper_tolerance=0.05, size=size)
+   p0 = Part(name='part0', nominal_value=0.97, tolerance=0.05, size=size)
+   p1 = Part(name='part1', nominal_value=2.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=0.97, tolerance=0.05, size=size)
 
    sp = StackPath(path_type='max', max_value=4.0)
    sp.add_part(p0)
@@ -185,10 +185,10 @@ gage.  We must also specify the limit of the pass/fail gage.
 
    size = 100000  # denotes size of the simulation
 
-   p0 = Part(name='part0', nominal_value=0.97, upper_tolerance=0.05, size=size,
+   p0 = Part(name='part0', nominal_value=0.97, tolerance=0.05, size=size,
              distribution='norm-lt', limits=0.99)
-   p1 = Part(name='part1', nominal_value=2.0, upper_tolerance=0.05, size=size)
-   p2 = Part(name='part2', nominal_value=0.97, upper_tolerance=0.05, size=size,
+   p1 = Part(name='part1', nominal_value=2.0, tolerance=0.05, size=size)
+   p2 = Part(name='part2', nominal_value=0.97, tolerance=0.05, size=size,
              distribution='norm-lt', limits=0.99)
 
    sp = StackPath(path_type='max', max_value=4.0)
