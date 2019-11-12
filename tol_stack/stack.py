@@ -26,7 +26,7 @@ class Part:
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
 
-        valid_distributions = ['norm', 'norm-screened', 'norm-notched', 'norm-lt', 'norm-gt']
+        valid_distributions = self.retrieve_distributions()
         if distribution.lower() not in valid_distributions:
             raise ValueError(f'unexpected distribution "{distribution}"; '
                              f'distribution must be in "{valid_distributions}"')
@@ -42,6 +42,10 @@ class Part:
         self.values = None
 
         self.refresh()
+
+    @staticmethod
+    def retrieve_distributions():
+        return ['norm', 'norm-screened', 'norm-notched', 'norm-lt', 'norm-gt']
 
     def refresh(self, size: int = None):
         """

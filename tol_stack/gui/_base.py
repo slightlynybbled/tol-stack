@@ -12,4 +12,3 @@ class BaseFrame(tk.Frame):
 
         self._parent = parent
         super().__init__(self._parent, padx=3, **kwargs)
-

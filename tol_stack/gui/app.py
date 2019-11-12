@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 from tol_stack.gui._base import BaseFrame
-from tol_stack.stack import StackPath
+from tol_stack.stack import Part, StackPath
 
 
 class Application(tk.Tk):
@@ -83,18 +83,14 @@ class PartsFrame(BaseFrame):
         self.redraw()
 
     def redraw(self):
-        for c in self.winfo_children():
-            c.grid_forget()
-
         r = 0
         if self._parts_label is None:
             self._parts_label = tk.Label(self, text='Parts', font=self.font_heading)
         self._parts_label.grid(row=r, column=0, sticky='new')
 
-        for frame in self._part_frames:
-            if not frame.removed:
-                r += 1
-                frame.grid(row=r, column=0, sticky='ew')
+        # for frame in self._part_frames:
+        #     r += 1
+        #     frame.grid(row=r, column=0, sticky='ew')
 
         r += 1
         if self._add_part_btn is None:
@@ -102,53 +98,46 @@ class PartsFrame(BaseFrame):
         self._add_part_btn.grid(row=r, column=0, sticky='ew')
 
     def _add_part(self):
+        top = tk.Toplevel(self)
+        part_frame = PartFrame(top)
+        part_frame.grid(row=0, column=0, sticky='news')
+
         self._part_frames.append(
-            PartFrame(self)
+            part_frame.get()
         )
         self.redraw()
 
 
 class PartFrame(BaseFrame):
-    def __init__(self, parent, on_update_callback: callable = None, loglevel=logging.INFO):
+    def __init__(self, parent, loglevel=logging.INFO):
         super().__init__(parent=parent, loglevel=loglevel)
 
-        self._on_update_callback = on_update_callback
-        self.removed = False
-
-        c = 0
+        r = 0
+        tk.Label(self, text='Name:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
         self._name_entry = tk.Entry(self)
-        self._name_entry.grid(row=0, column=c, sticky='ew')
+        self._name_entry.grid(row=r, column=1, sticky='ew')
 
-        c += 1
-        self._dist_cb = ttk.Combobox(self)
-        self._dist_cb.grid(row=0, column=c, sticky='ew')
+        r += 1
+        tk.Label(self, text='Distribution:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
+        self._dist_cb = ttk.Combobox(self, values=Part.retrieve_distributions())
+        self._dist_cb.grid(row=r, column=1, sticky='ew')
 
-        c += 1
+        r += 1
+        tk.Label(self, text='Nominal Value:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
         self._nominal_entry = tk.Entry(self)
-        self._nominal_entry.grid(row=0, column=c, sticky='ew')
+        self._nominal_entry.grid(row=r, column=1, sticky='ew')
 
-        c += 1
+        r += 1
+        tk.Label(self, text='Tolerance:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
         self._tolerance_entry = tk.Entry(self)
-        self._tolerance_entry.grid(row=0, column=c, sticky='ew')
+        self._tolerance_entry.grid(row=r, column=1, sticky='ew')
 
-        c += 1
-        self._maximum_entry = tk.Entry(self)
-        self._maximum_entry.grid(row=0, column=c, sticky='ew')
-
-        c += 1
-        self._minimum_entry = tk.Entry(self)
-        self._minimum_entry.grid(row=0, column=c, sticky='ew')
-
-        c += 1
-        self._remove_btn = tk.Button(self, text='-', command=self._remove)
-        self._remove_btn.grid(row=0, column=c, sticky='ew')
-
-    def _remove(self):
-        self.removed = True
-
-    def _on_update(self, *args):
-        if self._on_update_callback is not None:
-            self._on_update_callback()
+    def get(self):
+        return None
 
 
 if __name__ == '__main__':
