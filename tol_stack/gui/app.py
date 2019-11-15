@@ -2,7 +2,7 @@ import logging
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from tol_stack.gui._base import BaseFrame
+from tol_stack.gui._base import BaseFrame, BaseTop
 from tol_stack.stack import Part, StackPath
 
 
@@ -78,7 +78,7 @@ class PartsFrame(BaseFrame):
 
         self._parts_label = None
         self._add_part_btn = None
-        self._part_frames = []
+        self._parts = []
 
         self.redraw()
 
@@ -97,20 +97,19 @@ class PartsFrame(BaseFrame):
             self._add_part_btn = tk.Button(self, text='Add Part...', command=self._add_part, font=self.font)
         self._add_part_btn.grid(row=r, column=0, sticky='ew')
 
-    def _add_part(self):
-        top = tk.Toplevel(self)
-        part_frame = PartFrame(top)
-        part_frame.grid(row=0, column=0, sticky='news')
+    def _add_part_callback(self, part: Part):
+        self._parts.append(part)
 
-        self._part_frames.append(
-            part_frame.get()
-        )
+    def _add_part(self):
+        PartWindow(self, on_add_callback=self._add_part_callback)
         self.redraw()
 
 
-class PartFrame(BaseFrame):
-    def __init__(self, parent, loglevel=logging.INFO):
+class PartWindow(BaseTop):
+    def __init__(self, parent, on_add_callback: callable, loglevel=logging.INFO):
         super().__init__(parent=parent, loglevel=loglevel)
+
+        self._on_add_callback = on_add_callback
 
         r = 0
         tk.Label(self, text='Name:', font=self.font)\
@@ -123,6 +122,7 @@ class PartFrame(BaseFrame):
             .grid(row=r, column=0, sticky='e')
         self._dist_cb = ttk.Combobox(self, values=Part.retrieve_distributions())
         self._dist_cb.grid(row=r, column=1, sticky='ew')
+        self._dist_cb.set('norm')
 
         r += 1
         tk.Label(self, text='Nominal Value:', font=self.font)\
@@ -136,8 +136,57 @@ class PartFrame(BaseFrame):
         self._tolerance_entry = tk.Entry(self)
         self._tolerance_entry.grid(row=r, column=1, sticky='ew')
 
-    def get(self):
-        return None
+        r += 1
+        tk.Label(self, text='Upper Limit:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
+        self._upper_limit_entry = tk.Entry(self)
+        self._upper_limit_entry.grid(row=r, column=1, sticky='ew')
+
+        r += 1
+        tk.Label(self, text='Lower Limit:', font=self.font)\
+            .grid(row=r, column=0, sticky='e')
+        self._lower_limit_entry = tk.Entry(self)
+        self._lower_limit_entry.grid(row=r, column=1, sticky='ew')
+
+        r += 1
+        tk.Button(self, text='Add Part', command=self._add_part)\
+            .grid(row=r, column=0, columnspan=2, sticky='ew')
+
+        r += 1
+        tk.Button(self, text='Cancel', command=self._cancel)\
+            .grid(row=r, column=0, columnspan=2, sticky='ew')
+
+    def _add_part(self):
+        name_str = self._name_entry.get().strip()
+        dist_str = self._dist_cb.get().strip()
+        nominal_str = self._nominal_entry.get().strip()
+        tolerance_str = self._nominal_entry.get().strip()
+        upper_limit_str = self._upper_limit_entry.get().strip()
+        lower_limit_str = self._upper_limit_entry.get().strip()
+
+        if upper_limit_str and lower_limit_str:
+            limits = (float(upper_limit_str), float(lower_limit_str))
+        elif upper_limit_str:
+            limits = float(upper_limit_str)
+        else:
+            limits = None
+
+        part = Part(
+            name=name_str,
+            distribution=dist_str,
+            nominal_value=float(nominal_str),
+            tolerance=float(tolerance_str),
+            size=1000,
+            limits=limits
+        )
+
+        if self._on_add_callback is not None:
+            self._on_add_callback(part)
+
+        self.destroy()
+
+    def _cancel(self):
+        self.destroy()
 
 
 if __name__ == '__main__':
