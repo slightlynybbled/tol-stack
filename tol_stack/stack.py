@@ -44,7 +44,7 @@ class Part:
         self.refresh()
 
     def __repr__(self):
-        return f'<Part "{self.name}" dist={self._distribution} ' \
+        return f'<Part "{self.name}" dist="{self._distribution}" ' \
                f'nom={self._nominal_value:.03f} \u00b1{self._tolerance:.03f}>'
 
     @staticmethod
