@@ -108,21 +108,23 @@ class Part:
         else:
             raise ValueError(f'distribution "{self._distribution}" appears to be invalid')
 
-    def show_dist(self, **kwargs):
+    def show_dist(self, show: bool = True, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
+        :param show: True if the figure is to be opened in its own window
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
-        :return: None
+        :return: Figure
         """
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.hist(self.values, **kwargs)
         ax.set_title(f'Part distribution, {self.name}')
 
-        plt.show()
+        if show:
+            plt.show()
 
-        return None
+        return fig
 
 
 class StackPath:
@@ -203,12 +205,13 @@ class StackPath:
 
         self._stackups = finals
 
-    def show_dist(self, **kwargs):
+    def show_dist(self, show: bool = True, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
+        :param show: True if the figure is to be opened in its own window
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
-        :return: None
+        :return: Figure
         """
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
@@ -257,9 +260,10 @@ class StackPath:
                 ax.axvline(self._min_value, color='red', zorder=-1)
                 ax.text(x=x0, y=((y1 - y0) * 0.9), s=f'{interference_percent:.02f}% exceed maximum height', color='red')
 
-        plt.show()
+        if show:
+            plt.show()
 
-        return None
+        return fig
 
 
 if __name__ == '__main__':
