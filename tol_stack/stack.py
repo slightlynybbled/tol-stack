@@ -34,7 +34,7 @@ class Part:
         self.name = name
         self._distribution = distribution.lower()
         self._nominal_value = nominal_value
-        self._tolerance = self._nominal_value + abs(tolerance)
+        self._tolerance = abs(tolerance)
 
         self._limits = limits
         self._size = size
@@ -42,6 +42,10 @@ class Part:
         self.values = None
 
         self.refresh()
+
+    def __repr__(self):
+        return f'<Part "{self.name}" dist={self._distribution} ' \
+               f'nom={self._nominal_value:.03f} \u00b1{self._tolerance:.03f}>'
 
     @staticmethod
     def retrieve_distributions():
@@ -60,19 +64,19 @@ class Part:
         if self._distribution == 'norm':
             self.values = distributions.norm(
                 loc=self._nominal_value,
-                scale=(self._tolerance - self._nominal_value) / 3, size=self._size
+                scale=self._tolerance / 3, size=self._size
             )
         elif self._distribution == 'norm-screened':
             self.values = distributions.norm_screened(
                 loc=self._nominal_value,
-                scale=(self._tolerance - self._nominal_value) / 3,
+                scale=self._tolerance / 3,
                 size=self._size,
                 limits=self._limits
             )
         elif self._distribution == 'norm-notched':
             self.values = distributions.norm_notched(
                 loc=self._nominal_value,
-                scale=(self._tolerance - self._nominal_value) / 3,
+                scale=self._tolerance / 3,
                 size=self._size,
                 limits=self._limits
             )
@@ -84,7 +88,7 @@ class Part:
 
             self.values = distributions.norm_lt(
                 loc=self._nominal_value,
-                scale=(self._tolerance - self._nominal_value) / 3,
+                scale=self._tolerance / 3,
                 size=self._size,
                 limit=limit
             )
@@ -96,7 +100,7 @@ class Part:
 
             self.values = distributions.norm_gt(
                 loc=self._nominal_value,
-                scale=(self._tolerance - self._nominal_value) / 3,
+                scale=self._tolerance / 3,
                 size=self._size,
                 limit=limit
             )

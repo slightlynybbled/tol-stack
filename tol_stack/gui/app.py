@@ -88,9 +88,8 @@ class PartsFrame(BaseFrame):
             self._parts_label = tk.Label(self, text='Parts', font=self.font_heading)
         self._parts_label.grid(row=r, column=0, sticky='new')
 
-        # for frame in self._part_frames:
-        #     r += 1
-        #     frame.grid(row=r, column=0, sticky='ew')
+        for part in self._parts:
+            print(part)
 
         r += 1
         if self._add_part_btn is None:
@@ -99,6 +98,8 @@ class PartsFrame(BaseFrame):
 
     def _add_part_callback(self, part: Part):
         self._parts.append(part)
+
+        self.redraw()
 
     def _add_part(self):
         PartWindow(self, on_add_callback=self._add_part_callback)
@@ -160,9 +161,9 @@ class PartWindow(BaseTop):
         name_str = self._name_entry.get().strip()
         dist_str = self._dist_cb.get().strip()
         nominal_str = self._nominal_entry.get().strip()
-        tolerance_str = self._nominal_entry.get().strip()
+        tolerance_str = self._tolerance_entry.get().strip()
         upper_limit_str = self._upper_limit_entry.get().strip()
-        lower_limit_str = self._upper_limit_entry.get().strip()
+        lower_limit_str = self._lower_limit_entry.get().strip()
 
         if upper_limit_str and lower_limit_str:
             limits = (float(upper_limit_str), float(lower_limit_str))
