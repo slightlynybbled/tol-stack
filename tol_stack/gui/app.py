@@ -2,8 +2,14 @@ import logging
 import tkinter as tk
 import tkinter.ttk as ttk
 
+import matplotlib
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from tol_stack.gui._base import BaseFrame, BaseTop
 from tol_stack.stack import Part, StackPath
+
+
+matplotlib.use("TkAgg")
 
 
 class Application(tk.Tk):
@@ -13,12 +19,17 @@ class Application(tk.Tk):
 
         super().__init__()
 
-        TitleFrame(self)\
-            .grid(row=0, column=0, columnspan=2, sticky='new')
-        StackupFrame(self)\
-            .grid(row=1, column=0, sticky='new')
-        PartsFrame(self)\
-            .grid(row=1, column=1, sticky='new')
+        title_frame = TitleFrame(self)
+        title_frame.grid(row=0, column=0, columnspan=2, sticky='new')
+
+        stackup_frame = StackupFrame(self)
+        stackup_frame.grid(row=1, column=0, sticky='new')
+
+        parts_frame = PartsFrame(self)
+        parts_frame.grid(row=1, column=1, sticky='new')
+
+        plot_frame = PlotFrame(self)
+        plot_frame.grid(row=1, column=2, sticky='new')
 
         self.mainloop()
 
@@ -210,6 +221,17 @@ class PartWindow(BaseTop):
 
     def _cancel(self):
         self.destroy()
+
+
+class PlotFrame(BaseFrame):
+    def __init__(self, parent, loglevel=logging.INFO):
+        super().__init__(parent=parent, loglevel=loglevel)
+
+        self._canvas = None
+
+    def load_figure(self, figure: Figure):
+        self._canvas = FigureCanvasTkAgg(figure, self)
+        self._canvas.get_tk_widget().grid()
 
 
 if __name__ == '__main__':
