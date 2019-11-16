@@ -47,7 +47,7 @@ class StackupFrame(BaseFrame):
         self._stack_type_var.set(path_types[0])
         self._stack_type_var.trace('w', callback=self._on_change)
 
-        tk.Label(self, text='Select Stack Type:').grid(row=r, column=0, sticky='w')
+        tk.Label(self, text='Select Stack Type:', font=self.font).grid(row=r, column=0, sticky='w')
         self._stack_type_cb = ttk.Combobox(self, textvariable=self._stack_type_var, values=path_types)
         self._stack_type_cb.grid(row=r, column=1, sticky='ew')
 
@@ -76,28 +76,50 @@ class PartsFrame(BaseFrame):
     def __init__(self, parent, loglevel=logging.INFO):
         super().__init__(parent=parent, loglevel=loglevel)
 
-        self._parts_label = None
-        self._add_part_btn = None
         self._parts = []
+        self._parts_frame = tk.Frame(self)
+        self._add_part_btn = None
 
         self.redraw()
 
     def redraw(self):
-        r = 0
-        if self._parts_label is None:
-            self._parts_label = tk.Label(self, text='Parts', font=self.font_heading)
-        self._parts_label.grid(row=r, column=0, sticky='new')
+        for child in self._parts_frame.winfo_children():
+            child.destroy()
 
+        r = 0
+        tk.Label(self, text='Parts', font=self.font_heading)\
+            .grid(row=r, column=0, sticky='new')
+
+        r += 1
+        self._parts_frame.grid(row=r, column=0, sticky='news')
         for part in self._parts:
-            print(part)
+            r += 1
+            label = tk.Label(self._parts_frame, text=f'{part}', font=self.font)
+            label.grid(row=r, column=0, sticky='ew')
+
+            button = tk.Button(self._parts_frame, text='-', command=lambda x=part.name: self._remove_part(x))
+            button.grid(row=r, column=1, sticky='ew')
 
         r += 1
         if self._add_part_btn is None:
             self._add_part_btn = tk.Button(self, text='Add Part...', command=self._add_part, font=self.font)
+        else:
+            self._add_part_btn.grid_forget()
         self._add_part_btn.grid(row=r, column=0, sticky='ew')
 
     def _add_part_callback(self, part: Part):
         self._parts.append(part)
+
+        self.redraw()
+
+    def _remove_part(self, part_name: str):
+        index_of = None
+        for i, part in enumerate(self._parts):
+            if part.name == part_name:
+                index_of = i
+
+        if index_of is not None:
+            self._parts.pop(index_of)
 
         self.redraw()
 
