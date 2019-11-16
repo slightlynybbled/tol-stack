@@ -31,6 +31,9 @@ class Application(tk.Tk):
         plot_frame = PlotFrame(self)
         plot_frame.grid(row=1, column=2, sticky='new')
 
+        stackup_frame.add_plot_frame(plot_frame)
+        parts_frame.add_plot_frame(plot_frame)
+
         self.mainloop()
 
 
@@ -70,6 +73,8 @@ class StackupFrame(BaseFrame):
 
         self._size_entry.bind('<Return>', self._on_change)
 
+        self._plot_frame = None
+
     def _on_change(self, *args):
         path_type = self._stack_type_var.get()
         size = int(self._size_entry.get())
@@ -82,6 +87,9 @@ class StackupFrame(BaseFrame):
                 size=size
             )
 
+    def add_plot_frame(self, plot_frame: tk.Frame):
+        self._plot_frame = plot_frame
+
 
 class PartsFrame(BaseFrame):
     def __init__(self, parent, loglevel=logging.INFO):
@@ -90,6 +98,7 @@ class PartsFrame(BaseFrame):
         self._parts = []
         self._parts_frame = tk.Frame(self)
         self._add_part_btn = None
+        self._plot_frame = None
 
         self.redraw()
 
@@ -108,7 +117,10 @@ class PartsFrame(BaseFrame):
             label = tk.Label(self._parts_frame, text=f'{part}', font=self.font)
             label.grid(row=r, column=0, sticky='ew')
 
-            button = tk.Button(self._parts_frame, text='-', command=lambda x=part.name: self._remove_part(x))
+            label.bind('<Button-1>', lambda _, x=part: self._show_part_dist(x))
+
+            button = tk.Button(self._parts_frame, text='-',
+                               command=lambda x=part.name: self._remove_part(x))
             button.grid(row=r, column=1, sticky='ew')
 
         r += 1
@@ -137,6 +149,14 @@ class PartsFrame(BaseFrame):
     def _add_part(self):
         PartWindow(self, on_add_callback=self._add_part_callback)
         self.redraw()
+
+    def _show_part_dist(self, part: Part):
+        if self._plot_frame is not None:
+            figure = part.show_dist(show=False)
+            self._plot_frame.load_figure(figure)
+
+    def add_plot_frame(self, plot_frame: tk.Frame):
+        self._plot_frame = plot_frame
 
 
 class PartWindow(BaseTop):
