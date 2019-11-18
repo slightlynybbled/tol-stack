@@ -250,6 +250,8 @@ class PlotFrame(BaseFrame):
         self._canvas = None
 
     def load_figure(self, figure: Figure):
+        if self._canvas is not None:
+            self._canvas.get_tk_widget().grid_forget()
         self._canvas = FigureCanvasTkAgg(figure, self)
         self._canvas.get_tk_widget().grid()
 
