@@ -5,6 +5,7 @@ import tkinter.ttk as ttk
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+
 from tol_stack.gui._base import BaseFrame, BaseTop
 from tol_stack.stack import Part, StackPath
 
@@ -252,7 +253,9 @@ class PlotFrame(BaseFrame):
     def load_figure(self, figure: Figure):
         if self._canvas is not None:
             self._canvas.get_tk_widget().grid_forget()
-        self._canvas = FigureCanvasTkAgg(figure, self)
+
+        self._canvas = FigureCanvasTkAgg(figure, master=self)
+        self._canvas.draw()
         self._canvas.get_tk_widget().grid()
 
 
