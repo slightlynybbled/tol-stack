@@ -31,8 +31,6 @@ class Parser:
         for part in parts:
             self._stack.add_part(part)
 
-        self._stack.show_dist()
-
     def dump_yaml(self, path: Path):
         """
         Saves stack path and parts into a yaml file.
@@ -41,6 +39,10 @@ class Parser:
         :return:
         """
         raise NotImplementedError
+
+    @property
+    def stackup(self):
+        return self._stack
 
 
 if __name__ == '__main__':
