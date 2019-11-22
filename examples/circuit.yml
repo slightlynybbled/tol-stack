@@ -1,0 +1,15 @@
+StackPath 0:
+  path type: circuit
+  parts:
+    - Part 0:
+        distribution: norm
+        nominal value: 1.0
+        tolerance: 0.1
+    - Part 1:
+        distribution: norm
+        nominal value: 2.0
+        tolerance: 0.1
+    - Part 2:
+        distribution: norm
+        nominal value: -3.1
+        tolerance: 0.1

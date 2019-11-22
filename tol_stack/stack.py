@@ -179,7 +179,7 @@ class StackPath:
     @staticmethod
     def retrieve_stackup_path_types():
         return [
-            'circuit', 'max', 'min',  'radial'
+            'circuit', 'max', 'min', 'radial'
         ]
 
     def retrieve_parts(self, safe=True):
