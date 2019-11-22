@@ -21,7 +21,7 @@ class Application(tk.Tk):
         super().__init__()
 
         title_frame = TitleFrame(self)
-        title_frame.grid(row=0, column=0, columnspan=2, sticky='new')
+        title_frame.grid(row=0, column=0, columnspan=2)
 
         stackup_frame = StackupFrame(self)
         stackup_frame.grid(row=1, column=0, sticky='new')
@@ -42,7 +42,7 @@ class TitleFrame(BaseFrame):
     def __init__(self, parent, loglevel=logging.INFO):
         super().__init__(parent=parent, loglevel=loglevel)
 
-        tk.Label(self, text='Tolerance Analysis for Mortals', font=self.font_heading)\
+        tk.Label(self, text='Tolerance Analysis for Mortals', font=self.font_heading, anchor='center')\
             .grid(row=0, column=0, sticky='new')
 
 

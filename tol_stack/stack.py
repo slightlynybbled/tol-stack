@@ -1,6 +1,5 @@
 import logging
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 import tol_stack.distributions as distributions
@@ -116,7 +115,13 @@ class Part:
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
-        fig = plt.figure()
+        if show:
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
+        else:
+            from matplotlib.figure import Figure
+            fig = Figure()
+
         ax = fig.add_subplot(1, 1, 1)
         ax.hist(self.values, **kwargs)
         ax.set_title(f'Part distribution, {self.name}')
@@ -213,7 +218,13 @@ class StackPath:
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
-        fig = plt.figure()
+        if show:
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
+        else:
+            from matplotlib.figure import Figure
+            fig = Figure()
+
         ax = fig.add_subplot(1, 1, 1)
         ax.hist(self._stackups, **kwargs)
         ax.set_title(f'Stackup Distribution, {self._path_type}')
@@ -299,8 +310,8 @@ if __name__ == '__main__':
 
     sp.analyze()
 
-    #part0.show_dist(density=True, bins=31)
-    #part1.show_dist(density=True, bins=31)
-    #part2.show_dist(density=True, bins=31)
+    part0.show_dist(density=True, bins=31)
+    part1.show_dist(density=True, bins=31)
+    part2.show_dist(density=True, bins=31)
 
     sp.show_dist(bins=31)
