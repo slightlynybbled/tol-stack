@@ -1,5 +1,6 @@
 import logging
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 import tol_stack.distributions as distributions
@@ -107,29 +108,18 @@ class Part:
         else:
             raise ValueError(f'distribution "{self._distribution}" appears to be invalid')
 
-    def show_dist(self, show: bool = True, **kwargs):
+    def show_dist(self, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
-        :param show: True if the figure is to be opened in its own window
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
-        if show:
-            import matplotlib.pyplot as plt
-            fig = plt.figure()
-        else:
-            from matplotlib.figure import Figure
-            fig = Figure()
+        fig, ax = plt.subplots()
 
         ax = fig.add_subplot(1, 1, 1)
         ax.hist(self.values, **kwargs)
         ax.set_title(f'Part distribution, {self.name}')
-
-        if show:
-            plt.show()
-
-        return fig
 
 
 class StackPath:
@@ -210,22 +200,15 @@ class StackPath:
 
         self._stackups = finals
 
-    def show_dist(self, show: bool = True, **kwargs):
+    def show_dist(self, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
-        :param show: True if the figure is to be opened in its own window
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
-        if show:
-            import matplotlib.pyplot as plt
-            fig = plt.figure()
-        else:
-            from matplotlib.figure import Figure
-            fig = Figure()
+        fig, ax = plt.subplots()
 
-        ax = fig.add_subplot(1, 1, 1)
         ax.hist(self._stackups, **kwargs)
         ax.set_title(f'Stackup Distribution, {self._path_type}')
         ax.grid()
@@ -271,11 +254,6 @@ class StackPath:
                 ax.axvline(self._min_value, color='red', zorder=-1)
                 ax.text(x=x0, y=((y1 - y0) * 0.9), s=f'{interference_percent:.02f}% exceed maximum height', color='red')
 
-        if show:
-            plt.show()
-
-        return fig
-
 
 if __name__ == '__main__':
     size = 100000
@@ -311,7 +289,13 @@ if __name__ == '__main__':
     sp.analyze()
 
     part0.show_dist(density=True, bins=31)
+    plt.show()
+
     part1.show_dist(density=True, bins=31)
+    plt.show()
+
     part2.show_dist(density=True, bins=31)
+    plt.show()
 
     sp.show_dist(bins=31)
+    plt.show()

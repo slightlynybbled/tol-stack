@@ -4,12 +4,12 @@ StackPath 0:
     - Part 0:
         distribution: norm
         nominal value: 1.0
-        tolerance: 0.1
+        tolerance: 0.05
     - Part 1:
         distribution: norm
         nominal value: 2.0
-        tolerance: 0.1
+        tolerance: 0.05
     - Part 2:
         distribution: norm
-        nominal value: -3.1
-        tolerance: 0.1
+        nominal value: -3.05
+        tolerance: 0.05

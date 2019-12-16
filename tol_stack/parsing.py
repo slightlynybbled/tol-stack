@@ -31,6 +31,8 @@ class Parser:
         for part in parts:
             self._stack.add_part(part)
 
+        self._stack.analyze()
+
     def dump_yaml(self, path: Path):
         """
         Saves stack path and parts into a yaml file.
@@ -46,6 +48,12 @@ class Parser:
 
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
     parser = Parser()
     parser.load_yaml(Path('../examples/circuit.yml'))
+
+    parser.stackup.show_dist()
+
+    plt.show()
 
