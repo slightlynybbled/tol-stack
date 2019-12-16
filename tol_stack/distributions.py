@@ -3,11 +3,11 @@ import numpy as np
 _max_iterations = 100
 
 
-def norm(loc, scale, size=1):
+def norm(loc, scale, size):
     return np.random.normal(loc=loc, scale=scale, size=size)
 
 
-def norm_screened(loc, scale, limits: tuple, size=1):
+def norm_screened(loc, scale, limits: tuple, size):
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
     if limits is not None:
@@ -28,7 +28,7 @@ def norm_screened(loc, scale, limits: tuple, size=1):
     return values
 
 
-def norm_notched(loc, scale, limits: tuple, size=1):
+def norm_notched(loc, scale, limits: tuple, size):
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
     if limits is not None:
@@ -51,7 +51,7 @@ def norm_notched(loc, scale, limits: tuple, size=1):
     return values
 
 
-def norm_lt(loc, scale, limit, size=1):
+def norm_lt(loc, scale, limit, size):
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
     # removes values not in range
@@ -71,7 +71,7 @@ def norm_lt(loc, scale, limit, size=1):
     return values
 
 
-def norm_gt(loc, scale, limit, size=1):
+def norm_gt(loc, scale, limit, size):
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
     # removes values not in range
