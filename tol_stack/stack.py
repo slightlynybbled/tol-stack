@@ -47,6 +47,14 @@ class Part:
         return f'<Part "{self.name}" dist="{self._distribution}" ' \
                f'nom={self._nominal_value:.03f} \u00b1{self._tolerance:.03f}>'
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'distribution': self._distribution,
+            'nominal value': self._nominal_value,
+            'tolerance': self._tolerance
+        }
+
     @staticmethod
     def retrieve_distributions():
         return ['norm', 'norm-screened', 'norm-notched', 'norm-lt', 'norm-gt']
@@ -146,8 +154,8 @@ class StackPath:
         if path_type not in ['circuit', 'max', 'min']:
             raise NotImplementedError('the specified path type is on the roadmap, but not currently supported')
 
-        self._path_type = path_type
-        self._parts = []
+        self.path_type = path_type
+        self.parts = []
         self._stackups = []
 
         self._max_value = max_value
@@ -160,11 +168,11 @@ class StackPath:
         :param part: An instance of ``Part``
         :return: None
         """
-        if self._parts:
-            if len(part.values) != len(self._parts[0].values):
+        if self.parts:
+            if len(part.values) != len(self.parts[0].values):
                 raise ValueError('part sample sizes do not match, cannot perform valid comparison')
 
-        self._parts.append(part)
+        self.parts.append(part)
 
     @staticmethod
     def retrieve_stackup_path_types():
@@ -181,9 +189,9 @@ class StackPath:
         :return: a list of ``Parts``
         """
         if safe:
-            return self._parts.copy()
+            return self.parts.copy()
 
-        return self._parts
+        return self.parts
 
     def analyze(self):
         """
@@ -191,11 +199,11 @@ class StackPath:
 
         :return: None
         """
-        for part in self._parts:
+        for part in self.parts:
             part.refresh()
 
-        finals = np.zeros(len(self._parts[0].values))
-        for part in self._parts:
+        finals = np.zeros(len(self.parts[0].values))
+        for part in self.parts:
             finals += part.values
 
         self._stackups = finals
@@ -210,10 +218,10 @@ class StackPath:
         fig, ax = plt.subplots()
 
         ax.hist(self._stackups, **kwargs)
-        ax.set_title(f'Stackup Distribution, {self._path_type}')
+        ax.set_title(f'Stackup Distribution, {self.path_type}')
         ax.grid()
 
-        if self._path_type == 'circuit':
+        if self.path_type == 'circuit':
             ax.set_xlabel('sum of gaps between parts')
 
             interference = [v for v in self._stackups if v > 0]
@@ -226,7 +234,7 @@ class StackPath:
                 ax.text(x=x1*0.9, y=((y1-y0) * 0.9), s=f'{interference_percent:.02f}%', color='red', horizontalalignment='right')
                 ax.text(x=x0*0.9, y=((y1-y0) * 0.9), s=f'{100.0-interference_percent:.02f}%', color='red')
 
-        elif self._path_type == 'max':
+        elif self.path_type == 'max':
             ax.set_xlabel('distribution of total height')
 
             interference = [v for v in self._stackups if v > self._max_value]
@@ -240,7 +248,7 @@ class StackPath:
                 ax.axvline(self._max_value, color='red', zorder=-1)
                 ax.text(x=x1, y=((y1 - y0) * 0.9), s=f'{interference_percent:.02f}% exceed maximum height', color='red', horizontalalignment='right')
 
-        elif self._path_type == 'min':
+        elif self.path_type == 'min':
             ax.set_xlabel('distribution of total height')
 
             interference = [v for v in self._stackups if v < self._min_value]
@@ -292,10 +300,10 @@ if __name__ == '__main__':
     plt.show()
 
     part1.show_dist(density=True, bins=31)
-    plt.show()
+    #plt.show()
 
     part2.show_dist(density=True, bins=31)
-    plt.show()
+    #plt.show()
 
     sp.show_dist(bins=31)
-    plt.show()
+    #plt.show()

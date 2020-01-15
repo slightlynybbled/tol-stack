@@ -14,17 +14,14 @@ class Parser:
 
         data = yaml.load(text, Loader=yaml.Loader)
 
-        # for the moment, we will only support one stack path
-        stack_path = list(data.keys())[0]
-
         parts = []
-        for part in data[stack_path]['parts']:
+        for part in data['parts']:
             part_name = list(part.keys())[0]
             values = {k.strip().replace(' ', '_'): v for k, v in part[part_name].items()}
             parts.append(Part(name=part_name, **values))
 
         values = {k.strip().replace(' ', '_').lower(): v
-                  for k, v in data[stack_path].items()
+                  for k, v in data.items()
                   if k.strip().lower() != 'parts'}
         self._stack = StackPath(**values)
 
@@ -40,7 +37,21 @@ class Parser:
         :param path: path to file name under which to save the data
         :return:
         """
-        raise NotImplementedError
+        data = {}
+        data['path type'] = self._stack.path_type
+
+        parts = [part.to_dict() for part in self._stack.parts]
+        data['parts'] = []
+        for part in parts:
+            part_data = {
+                'distribution': part.get('distribution'),
+                'nominal value': part.get('nominal value'),
+                'tolerance': part.get('tolerance')
+            }
+            data['parts'].append({part.get('name'): part_data})
+
+        with path.open('w') as f:
+            f.write(yaml.dump(data, sort_keys=False))
 
     @property
     def stackup(self):
@@ -52,8 +63,9 @@ if __name__ == '__main__':
 
     parser = Parser()
     parser.load_yaml(Path('../examples/circuit.yml'))
+    parser.dump_yaml(Path('../examples/dump.yml'))
 
-    parser.stackup.show_dist()
+    # parser.stackup.show_dist()
 
     plt.show()
 
