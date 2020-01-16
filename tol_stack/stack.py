@@ -32,9 +32,9 @@ class Part:
                              f'distribution must be in "{valid_distributions}"')
 
         self.name = name
-        self._distribution = distribution.lower()
-        self._nominal_value = nominal_value
-        self._tolerance = abs(tolerance)
+        self.distribution = distribution.lower()
+        self.nominal_value = nominal_value
+        self.tolerance = abs(tolerance)
 
         self._limits = limits
         self._size = size
@@ -44,15 +44,15 @@ class Part:
         self.refresh()
 
     def __repr__(self):
-        return f'<Part "{self.name}" dist="{self._distribution}" ' \
-               f'nom={self._nominal_value:.03f} \u00b1{self._tolerance:.03f}>'
+        return f'<Part "{self.name}" dist="{self.distribution}" ' \
+               f'nom={self.nominal_value:.03f} \u00b1{self.tolerance:.03f}>'
 
     def to_dict(self):
         return {
             'name': self.name,
-            'distribution': self._distribution,
-            'nominal value': self._nominal_value,
-            'tolerance': self._tolerance
+            'distribution': self.distribution,
+            'nominal value': self.nominal_value,
+            'tolerance': self.tolerance
         }
 
     @staticmethod
@@ -69,52 +69,52 @@ class Part:
         if size is not None:
             self._size = size
 
-        if self._distribution == 'norm':
+        if self.distribution == 'norm':
             self.values = distributions.norm(
-                loc=self._nominal_value,
-                scale=self._tolerance / 3, size=self._size
+                loc=self.nominal_value,
+                scale=self.tolerance / 3, size=self._size
             )
-        elif self._distribution == 'norm-screened':
+        elif self.distribution == 'norm-screened':
             self.values = distributions.norm_screened(
-                loc=self._nominal_value,
-                scale=self._tolerance / 3,
+                loc=self.nominal_value,
+                scale=self.tolerance / 3,
                 size=self._size,
                 limits=self._limits
             )
-        elif self._distribution == 'norm-notched':
+        elif self.distribution == 'norm-notched':
             self.values = distributions.norm_notched(
-                loc=self._nominal_value,
-                scale=self._tolerance / 3,
+                loc=self.nominal_value,
+                scale=self.tolerance / 3,
                 size=self._size,
                 limits=self._limits
             )
-        elif self._distribution == 'norm-lt':
+        elif self.distribution == 'norm-lt':
             if isinstance(self._limits, tuple):
                 limit, *_ = self._limits
             else:
                 limit = self._limits
 
             self.values = distributions.norm_lt(
-                loc=self._nominal_value,
-                scale=self._tolerance / 3,
+                loc=self.nominal_value,
+                scale=self.tolerance / 3,
                 size=self._size,
                 limit=limit
             )
-        elif self._distribution == 'norm-gt':
+        elif self.distribution == 'norm-gt':
             if isinstance(self._limits, tuple):
                 limit, *_ = self._limits
             else:
                 limit = self._limits
 
             self.values = distributions.norm_gt(
-                loc=self._nominal_value,
-                scale=self._tolerance / 3,
+                loc=self.nominal_value,
+                scale=self.tolerance / 3,
                 size=self._size,
                 limit=limit
             )
 
         else:
-            raise ValueError(f'distribution "{self._distribution}" appears to be invalid')
+            raise ValueError(f'distribution "{self.distribution}" appears to be invalid')
 
     def show_dist(self, **kwargs):
         """
