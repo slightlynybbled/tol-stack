@@ -159,6 +159,10 @@ class PartsFrame(_BaseFrame):
             row += 1
 
     def add_part(self, name: str, distribution: str, nominal: (int, float), tolerance: (int, float)):
+        if name in self._parts.keys():
+            showerror('Part already exists', 'Part name already exists')
+            return
+
         part = Part(
             name=name,
             distribution=distribution,
