@@ -1,0 +1,23 @@
+max value: 5.075
+min value: 4.925
+parts:
+  - Part 0:
+      distribution: norm
+      nominal value: 1.0
+      tolerance: 0.05
+  - Part 1:
+      distribution: norm
+      nominal value: 1.0
+      tolerance: 0.05
+  - Part 2:
+      distribution: norm
+      nominal value: 1.0
+      tolerance: 0.05
+  - Part 3:
+      distribution: norm
+      nominal value: 1.0
+      tolerance: 0.05
+  - Part 4:
+      distribution: norm
+      nominal value: 1.0
+      tolerance: 0.05

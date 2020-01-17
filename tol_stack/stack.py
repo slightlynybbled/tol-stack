@@ -205,7 +205,7 @@ class StackPath:
         ax.grid()
 
         if self.max_value is not None:
-            ax.set_xlabel('distribution of total height')
+            ax.set_xlabel('distribution of total length')
 
             interference = [v for v in self._stackups if v > self.max_value]
 
@@ -221,7 +221,7 @@ class StackPath:
                         color='red', horizontalalignment='left')
 
         if self.min_value is not None:
-            ax.set_xlabel('distribution of total height')
+            ax.set_xlabel('distribution of total length')
 
             interference = [v for v in self._stackups if v < self.min_value]
 
