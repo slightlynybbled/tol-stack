@@ -5,6 +5,7 @@ parts:
       distribution: norm
       nominal value: 1.0
       tolerance: 0.05
+      material: brass
   - Part 1:
       distribution: norm
       nominal value: 1.0
