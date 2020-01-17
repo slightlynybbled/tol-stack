@@ -28,88 +28,35 @@ class MainFrame(_BaseFrame):
 
         r = 0
         tk.Label(self, text='Tolerance Stack Analysis', font=self._heading)\
-            .grid(row=r, column=0, columnspan=3, sticky='ew')
-
-        r += 1
-        self._pf = PartsFrame(self)
-        AddPartFrame(self, on_add_callback=self._pf.add_part)\
-            .grid(row=r, column=0, sticky='news')
-        tk.Label(self, text='==>', font=self._heading)\
-            .grid(row=r, column=1, sticky='ew')
-        self._pf.grid(row=r, column=2, sticky='news')
-
-
-class AddPartFrame(_BaseFrame):
-    def __init__(self, parent, on_add_callback: callable, **kwargs):
-        super().__init__(parent, **kwargs)
-
-        self._on_add_callback = on_add_callback
-
-        r = 0
-
-        tk.Label(self, text='Part Name', font=self._font)\
-            .grid(row=r, column=0, sticky='e')
-        self._name_entry = tk.Entry(self)
-        self._name_entry.grid(row=r, column=1, sticky='ew')
-
-        r += 1
-        tk.Label(self, text='Distribution', font=self._font)\
-            .grid(row=r, column=0, sticky='e')
-        self._dist_var = tk.StringVar()
-        self._dist_var.set(Part.retrieve_distributions()[0])
-        self._dist_om = tk.OptionMenu(self, self._dist_var, *Part.retrieve_distributions())
-        self._dist_om.grid(row=r, column=1, sticky='ew')
-
-        r += 1
-        tk.Label(self, text='Nominal Value', font=self._font)\
-            .grid(row=r, column=0, sticky='e')
-        self._nominal_entry = tk.Entry(self)
-        self._nominal_entry.grid(row=r, column=1, sticky='ew')
-
-        r += 1
-        tk.Label(self, text='Tolerance', font=self._font)\
-            .grid(row=r, column=0, sticky='e')
-        self._tolerance_entry = tk.Entry(self)
-        self._tolerance_entry.grid(row=r, column=1, sticky='ew')
-
-        r += 1
-        tk.Button(self, text='Add Part', font=self._font, command=self._on_add_part)\
             .grid(row=r, column=0, columnspan=2, sticky='ew')
 
-    def _on_add_part(self):
-        name = self._name_entry.get().strip()
-        nominal_str = self._nominal_entry.get().strip()
-        tolerance_str = self._tolerance_entry.get().strip()
+        r += 1
+        self._limits_frame = LimitsFrame(self)
+        self._limits_frame.grid(row=r, column=0, sticky='new')
 
-        if name == '':
-            showerror('Name is Empty', 'The part name value must not be empty.')
-            return
+        self._stack_canvas = StackCanvas(self)
+        self._stack_canvas.grid(row=r, column=1, rowspan=2, sticky='news')
 
-        if nominal_str == '':
-            showerror('Nominal value empty!', 'The nominal value must not be empty.')
-            return
-        if tolerance_str == '':
-            showerror('Tolerance value empty!', 'The tolerance value must not be empty.')
-            return
+        r += 1
+        self._parts_frame = PartsFrame(self)
+        self._parts_frame.grid(row=r, column=0, sticky='new')
 
-        try:
-            nominal = float(nominal_str)
-        except ValueError as e:
-            showerror('Bad nominal value', f'The nominal value is not valid\nError: {e}')
-            return
 
-        try:
-            tolerance = float(tolerance_str)
-        except ValueError as e:
-            showerror('Bad tolerance value', f'The tolerance value is not valid\nError: {e}')
-            return
+class LimitsFrame(_BaseFrame):
+    def __init__(self, parent, **kwargs):
+        super().__init__(parent, **kwargs)
 
-        self._on_add_callback(name=name, distribution=self._dist_var.get(), nominal=nominal, tolerance=tolerance)
+        r = 0
+        tk.Label(self, text='Maximum Target Height', font=self._font)\
+            .grid(row=r, column=0, sticky='e')
+        self._max_height_entry = tk.Entry(self)
+        self._max_height_entry.grid(row=r, column=1, sticky='ew')
 
-        self._name_entry.delete(0, 'end')
-        self._dist_var.set(Part.retrieve_distributions()[0])
-        self._nominal_entry.delete(0, 'end')
-        self._tolerance_entry.delete(0, 'end')
+        r += 1
+        tk.Label(self, text='Minimum Target Height', font=self._font)\
+            .grid(row=r, column=0, sticky='e')
+        self._min_height_entry = tk.Entry(self)
+        self._min_height_entry.grid(row=r, column=1, sticky='ew')
 
 
 class PartsFrame(_BaseFrame):
@@ -117,6 +64,7 @@ class PartsFrame(_BaseFrame):
         super().__init__(parent, **kwargs)
 
         self._parts = {}
+        self._redraw()
 
     def _redraw(self):
         # remove parts currently in the frame
@@ -138,25 +86,39 @@ class PartsFrame(_BaseFrame):
             .grid(row=row, column=3, sticky='ew')
 
         row += 1
-        for part_name, part in self._parts.items():
-            pn_label = tk.Label(self, text=part.name, font=self._font, relief='sunken')
-            pn_label.grid(row=row, column=0, sticky='ew')
 
-            dist_label = tk.Label(self, text=part.distribution, font=self._font, relief='sunken')
-            dist_label.grid(row=row, column=1, sticky='ew')
+        if len(self._parts) == 0:
+            pn_entry = tk.Entry(self, font=self._font, relief='sunken')
+            pn_entry.grid(row=row, column=0, sticky='ew')
 
-            nom_label = tk.Label(self, text=part.nominal_value, font=self._font, relief='sunken')
-            nom_label.grid(row=row, column=2, sticky='ew')
+            dist_entry = tk.Entry(self, font=self._font, relief='sunken')
+            dist_entry.grid(row=row, column=1, sticky='ew')
 
-            tol_label = tk.Label(self, text=part.tolerance, font=self._font, relief='sunken')
-            tol_label.grid(row=row, column=3, sticky='ew')
+            nom_entry = tk.Entry(self, font=self._font, relief='sunken')
+            nom_entry.grid(row=row, column=2, sticky='ew')
 
-            remove_label = tk.Label(self, text='-', font=self._font, relief='raised')
-            remove_label.grid(row=row, column=4, sticky='ew')
+            tol_entry = tk.Entry(self, font=self._font, relief='sunken')
+            tol_entry.grid(row=row, column=3, sticky='ew')
+        else:
+            for part_name, part in self._parts.items():
+                pn_entry = tk.Entry(self, text=part.name, font=self._font, relief='sunken')
+                pn_entry.grid(row=row, column=0, sticky='ew')
 
-            remove_label.bind('<Button-1>', lambda _, x=part_name: self.remove_part(x))
+                dist_entry = tk.Entry(self, text=part.distribution, font=self._font, relief='sunken')
+                dist_entry.grid(row=row, column=1, sticky='ew')
 
-            row += 1
+                nom_entry = tk.Entry(self, text=part.nominal_value, font=self._font, relief='sunken')
+                nom_entry.grid(row=row, column=2, sticky='ew')
+
+                tol_entry = tk.Entry(self, text=part.tolerance, font=self._font, relief='sunken')
+                tol_entry.grid(row=row, column=3, sticky='ew')
+
+                remove_label = tk.Label(self, text='-', font=self._font, relief='raised')
+                remove_label.grid(row=row, column=4, sticky='ew')
+
+                remove_label.bind('<Button-1>', lambda _, x=part_name: self.remove_part(x))
+
+                row += 1
 
     def add_part(self, name: str, distribution: str, nominal: (int, float), tolerance: (int, float)):
         if name in self._parts.keys():
@@ -178,6 +140,42 @@ class PartsFrame(_BaseFrame):
         self._parts.pop(name)
         self._redraw()
 
+
+class StackCanvas(tk.Canvas):
+    def __init__(self, parent, **kwargs):
+        self._parent = parent
+
+        self._height, self._width = 400, 400
+        self._max_height, self._min_height = None, None
+
+        super().__init__(self._parent, height=self._height, width=self._width, **kwargs)
+
+        self._draw_datum()
+        self.add_max_height()
+
+    def _draw_datum(self):
+        # find x0, y0
+        x0 = int(self._width * 0.1)
+        y0 = int(self._height / 2)
+
+        # find x1, y1
+        x1 = int(self._width * 0.9)
+        y1 = y0
+
+        self.create_line(x0, y0, x1, y1)
+        self.create_text(x1, y1, text='datum', anchor='ne')
+
+    def add_max_height(self, height=None):
+        # find x0, y0
+        x0 = int(self._width * 0.1)
+        y0 = int(self._height / 4)
+
+        # find x1, y1
+        x1 = int(self._width * 0.9)
+        y1 = y0
+
+        self.create_line(x0, y0, x1, y1, fill='red')
+        self.create_text(x1, y1, text='max height', anchor='se', fill='red')
 
 if __name__ == '__main__':
     Application()

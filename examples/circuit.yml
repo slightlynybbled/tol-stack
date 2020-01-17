@@ -1,4 +1,5 @@
-path type: circuit
+max value: 0.05
+min value: 0.00
 parts:
   - Part 0:
       distribution: norm

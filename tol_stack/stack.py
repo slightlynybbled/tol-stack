@@ -134,27 +134,16 @@ class StackPath:
     """
     The stack path analysis class.
 
-    :param path_type: the path type as a string ('circuit', 'max', 'min', or 'radial')
-    :param max_value: a floating-point number required when the ``path_type`` is 'max'
-    :param min_value: a floating-point number required when the ``path_type`` is 'min'
+    :param max_value: a floating-point number
+    :param min_value: a floating-point number
     :param loglevel: the logging level that is to be implemented for the class
 
     """
-    def __init__(self, path_type: str = 'circuit',
-                 max_value: float = None, min_value: float = None,
+    def __init__(self, max_value: float = None, min_value: float = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
 
-        valid_path_types = self.retrieve_stackup_path_types()
-        if path_type not in valid_path_types:
-            raise ValueError(f'"path_type" must be in f{valid_path_types}')
-
-        # todo: implement all stackup path types and remove this
-        if path_type not in ['circuit', 'max', 'min']:
-            raise NotImplementedError('the specified path type is on the roadmap, but not currently supported')
-
-        self.path_type = path_type
         self.parts = []
         self._stackups = []
 
@@ -173,12 +162,6 @@ class StackPath:
                 raise ValueError('part sample sizes do not match, cannot perform valid comparison')
 
         self.parts.append(part)
-
-    @staticmethod
-    def retrieve_stackup_path_types():
-        return [
-            'circuit', 'max', 'min', 'radial'
-        ]
 
     def retrieve_parts(self, safe=True):
         """
@@ -218,23 +201,10 @@ class StackPath:
         fig, ax = plt.subplots()
 
         ax.hist(self._stackups, **kwargs)
-        ax.set_title(f'Stackup Distribution, {self.path_type}')
+        ax.set_title(f'Stackup Distribution')
         ax.grid()
 
-        if self.path_type == 'circuit':
-            ax.set_xlabel('sum of gaps between parts')
-
-            interference = [v for v in self._stackups if v > 0]
-            if len(interference) > 0:
-                interference_percent = 100.0 * len(interference) / len(self._stackups)
-
-                x0, x1 = ax.get_xlim()
-                y0, y1 = ax.get_ylim()
-                ax.axvline(0.0, color='red', linewidth=5, zorder=-1)
-                ax.text(x=x1*0.9, y=((y1-y0) * 0.9), s=f'{interference_percent:.02f}%', color='red', horizontalalignment='right')
-                ax.text(x=x0*0.9, y=((y1-y0) * 0.9), s=f'{100.0-interference_percent:.02f}%', color='red')
-
-        elif self.path_type == 'max':
+        if self._max_value is not None:
             ax.set_xlabel('distribution of total height')
 
             interference = [v for v in self._stackups if v > self._max_value]
@@ -246,9 +216,11 @@ class StackPath:
                 y0, y1 = ax.get_ylim()
                 ax.axvspan(self._max_value, x1, color='red', zorder=-2, alpha=0.1)
                 ax.axvline(self._max_value, color='red', zorder=-1)
-                ax.text(x=x1, y=((y1 - y0) * 0.9), s=f'{interference_percent:.02f}% exceed maximum height', color='red', horizontalalignment='right')
+                ax.text(x=x1, y=((y1 - y0) * 0.9),
+                        s=f'{interference_percent:.02f}% above maximum',
+                        color='red', horizontalalignment='right')
 
-        elif self.path_type == 'min':
+        if self._min_value is not None:
             ax.set_xlabel('distribution of total height')
 
             interference = [v for v in self._stackups if v < self._min_value]
@@ -260,7 +232,9 @@ class StackPath:
                 y0, y1 = ax.get_ylim()
                 ax.axvspan(x0, self._min_value, color='red', zorder=-2, alpha=0.1)
                 ax.axvline(self._min_value, color='red', zorder=-1)
-                ax.text(x=x0, y=((y1 - y0) * 0.9), s=f'{interference_percent:.02f}% exceed maximum height', color='red')
+                ax.text(x=x0, y=((y1 - y0) * 0.9),
+                        s=f'{interference_percent:.02f}% below minimum',
+                        color='red', horizontalalignment='left')
 
 
 if __name__ == '__main__':
@@ -269,7 +243,7 @@ if __name__ == '__main__':
     part0 = Part(
         name='part0',
         nominal_value=1.0,
-        tolerance=0.03,
+        tolerance=0.01,
         limits=1.02,
         size=size
     )
@@ -277,33 +251,33 @@ if __name__ == '__main__':
     part1 = Part(
         name='part1',
         nominal_value=2.0,
-        tolerance=0.05,
+        tolerance=0.01,
         limits=2.02,
         size=size
     )
 
     part2 = Part(
         name='part2',
-        nominal_value=-3.00,
-        tolerance=0.05,
+        nominal_value=-2.98,
+        tolerance=0.02,
         size=size
     )
 
-    sp = StackPath()
+    sp = StackPath(max_value=0.05, min_value=0.00)
     sp.add_part(part0)
     sp.add_part(part1)
     sp.add_part(part2)
 
     sp.analyze()
 
-    part0.show_dist(density=True, bins=31)
-    plt.show()
-
-    part1.show_dist(density=True, bins=31)
+    #part0.show_dist(density=True, bins=31)
     #plt.show()
 
-    part2.show_dist(density=True, bins=31)
+    #part1.show_dist(density=True, bins=31)
+    #plt.show()
+
+    #part2.show_dist(density=True, bins=31)
     #plt.show()
 
     sp.show_dist(bins=31)
-    #plt.show()
+    plt.show()
