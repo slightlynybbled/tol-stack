@@ -147,8 +147,8 @@ class StackPath:
         self.parts = []
         self._stackups = []
 
-        self._max_value = max_value
-        self._min_value = min_value
+        self.max_value = max_value
+        self.min_value = min_value
 
     def add_part(self, part: Part):
         """
@@ -204,34 +204,34 @@ class StackPath:
         ax.set_title(f'Stackup Distribution')
         ax.grid()
 
-        if self._max_value is not None:
+        if self.max_value is not None:
             ax.set_xlabel('distribution of total height')
 
-            interference = [v for v in self._stackups if v > self._max_value]
+            interference = [v for v in self._stackups if v > self.max_value]
 
             if len(interference) > 0:
                 interference_percent = 100.0 * len(interference) / len(self._stackups)
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(self._max_value, x1, color='red', zorder=-2, alpha=0.1)
-                ax.axvline(self._max_value, color='red', zorder=-1)
+                ax.axvspan(self.max_value, x1, color='red', zorder=-2, alpha=0.1)
+                ax.axvline(self.max_value, color='red', zorder=-1)
                 ax.text(x=x1, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% above maximum',
                         color='red', horizontalalignment='right')
 
-        if self._min_value is not None:
+        if self.min_value is not None:
             ax.set_xlabel('distribution of total height')
 
-            interference = [v for v in self._stackups if v < self._min_value]
+            interference = [v for v in self._stackups if v < self.min_value]
 
             if len(interference) > 0:
                 interference_percent = 100.0 * len(interference) / len(self._stackups)
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(x0, self._min_value, color='red', zorder=-2, alpha=0.1)
-                ax.axvline(self._min_value, color='red', zorder=-1)
+                ax.axvspan(x0, self.min_value, color='red', zorder=-2, alpha=0.1)
+                ax.axvline(self.min_value, color='red', zorder=-1)
                 ax.text(x=x0, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% below minimum',
                         color='red', horizontalalignment='left')

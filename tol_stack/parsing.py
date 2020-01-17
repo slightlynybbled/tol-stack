@@ -38,7 +38,11 @@ class Parser:
         :return:
         """
         data = {}
-        data['path type'] = self._stack.path_type
+
+        if self._stack.max_value is not None:
+            data['max value'] = self._stack.max_value
+        if self._stack.min_value is not None:
+            data['min value'] = self._stack.min_value
 
         parts = [part.to_dict() for part in self._stack.parts]
         data['parts'] = []
