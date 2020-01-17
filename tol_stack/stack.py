@@ -200,7 +200,7 @@ class StackPath:
         """
         fig, ax = plt.subplots()
 
-        ax.hist(self._stackups, **kwargs)
+        ax.hist(self._stackups, bins=31, **kwargs)
         ax.set_title(f'Stackup Distribution')
         ax.grid()
 
@@ -216,9 +216,9 @@ class StackPath:
                 y0, y1 = ax.get_ylim()
                 ax.axvspan(self.max_value, x1, color='red', zorder=-2, alpha=0.1)
                 ax.axvline(self.max_value, color='red', zorder=-1)
-                ax.text(x=x1, y=((y1 - y0) * 0.9),
+                ax.text(x=self.max_value, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% above maximum',
-                        color='red', horizontalalignment='right')
+                        color='red', horizontalalignment='left')
 
         if self.min_value is not None:
             ax.set_xlabel('distribution of total height')
@@ -232,9 +232,9 @@ class StackPath:
                 y0, y1 = ax.get_ylim()
                 ax.axvspan(x0, self.min_value, color='red', zorder=-2, alpha=0.1)
                 ax.axvline(self.min_value, color='red', zorder=-1)
-                ax.text(x=x0, y=((y1 - y0) * 0.9),
+                ax.text(x=self.min_value, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% below minimum',
-                        color='red', horizontalalignment='left')
+                        color='red', horizontalalignment='right')
 
 
 if __name__ == '__main__':
