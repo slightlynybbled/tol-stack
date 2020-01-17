@@ -15,11 +15,13 @@ class Part:
     :param limits: the limits of the distribution; if there are two limits on the distribution, then \
     there are two values to be passed as a tuple; else, if the distribution is expecting a single value, \
     then this value will be a float
+    :param cte: coefficient of thermal expansion in (length / deg C) where length is the same unit \
+    as is specified for the `nominal_value` and `tolerance`
     """
     def __init__(self, name: str,
                  nominal_value: float, tolerance: float,
                  distribution: str = 'norm', size: int = 1000, limits: (tuple, float) = None,
-                 material: str = None,
+                 cte: str = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -33,7 +35,7 @@ class Part:
         self.distribution = distribution.lower()
         self.nominal_value = nominal_value
         self.tolerance = abs(tolerance)
-        self.material = material
+        self.cte = cte
 
         self._limits = limits
         self._size = size
