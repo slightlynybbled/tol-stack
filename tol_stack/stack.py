@@ -35,7 +35,8 @@ class StackPath:
         """
         if self.parts:
             if len(part.values) != len(self.parts[0].values):
-                raise ValueError('part sample sizes do not match, cannot perform valid comparison')
+                raise ValueError('part sample sizes do not match, '
+                                 'cannot perform valid comparison')
 
         self.parts.append(part)
 
@@ -43,7 +44,8 @@ class StackPath:
         """
         Retrieves a safe copy of the parts to work with.
 
-        :param safe: if False, will return a list of the part instances; if True, \
+        :param safe: if False, will return a list of the \
+        part instances; if True, \
         will return a copied list of the instances
         :return: a list of ``Parts``
         """

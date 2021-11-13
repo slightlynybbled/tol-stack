@@ -1,5 +1,5 @@
 import logging
-
+import matplotlib.pyplot as plt
 import tol_stack.distributions as distributions
 
 
@@ -20,7 +20,9 @@ class Part:
     """
     def __init__(self, name: str,
                  nominal_value: float, tolerance: float,
-                 distribution: str = 'norm', size: int = 1000, limits: (tuple, float) = None,
+                 distribution: str = 'norm', size: int = 1000,
+                 limits: (tuple, float) = None,
+                 material: str = None,
                  cte: str = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -35,6 +37,7 @@ class Part:
         self.distribution = distribution.lower()
         self.nominal_value = nominal_value
         self.tolerance = abs(tolerance)
+        self.material = material
         self.cte = cte
 
         self._limits = limits

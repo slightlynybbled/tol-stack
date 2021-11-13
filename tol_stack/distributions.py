@@ -21,7 +21,9 @@ def norm_screened(loc, scale, limits: tuple, size):
             values = values[(values >= low_limit) & (values <= high_limit)]
             count += 1
             if count > _max_iterations:
-                raise ValueError('number of iterations exceeds the max allowable... are the limits set appropriately?')
+                raise ValueError('number of iterations exceeds the max '
+                                 'allowable... are the limits set '
+                                 'appropriately?')
 
         values = values[:size]
 
@@ -44,7 +46,9 @@ def norm_notched(loc, scale, limits: tuple, size):
 
             count += 1
             if count > _max_iterations:
-                raise ValueError('number of iterations exceeds the max allowable... are the limits set appropriately?')
+                raise ValueError('number of iterations exceeds the max '
+                                 'allowable... are the limits set '
+                                 'appropriately?')
 
         values = values[:size]
 
@@ -52,14 +56,17 @@ def norm_notched(loc, scale, limits: tuple, size):
 
 
 def norm_lt(loc, scale, limit, size):
-    values = np.random.normal(loc=loc, scale=scale, size=size)
+    values = np.random.normal(loc=loc, scale=scale,
+                              size=size)
 
     # removes values not in range
     values = values[values <= limit]
 
     count = 0
     while len(values) < size:
-        values = np.append(values, np.random.normal(loc=loc, scale=scale, size=size))
+        values = np.append(values, np.random.normal(loc=loc,
+                                                    scale=scale,
+                                                    size=size))
         values = values[(values <= limit)]
 
         count += 1
@@ -79,7 +86,9 @@ def norm_gt(loc, scale, limit, size):
 
     count = 0
     while len(values) < size:
-        values = np.append(values, np.random.normal(loc=loc, scale=scale, size=size))
+        values = np.append(values, np.random.normal(loc=loc,
+                                                    scale=scale,
+                                                    size=size))
         values = values[(values >= limit)]
 
         count += 1
