@@ -20,10 +20,11 @@ class Part:
     """
     def __init__(self, name: str,
                  nominal_value: float, tolerance: float,
-                 distribution: str = 'norm', size: int = 1000,
+                 distribution: str = 'norm', size: int = 10000,
                  limits: (tuple, float) = None,
                  material: str = None,
                  cte: str = None,
+                 comment: str = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -39,6 +40,7 @@ class Part:
         self.tolerance = abs(tolerance)
         self.material = material
         self.cte = cte
+        self.comment = comment
 
         self._limits = limits
         self._size = size
@@ -127,8 +129,20 @@ class Part:
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
-        fig, ax = plt.subplots()
+        fig, axs = plt.subplots(2)
 
-        ax = fig.add_subplot(1, 1, 1)
-        ax.hist(self.values, **kwargs)
-        ax.set_title(f'Part distribution, {self.name}')
+        # show a "zoomed out" view with the datum and the dimension
+        axs[0].hist(self.values, **kwargs)
+        axs[0].set_xlim(0)
+        axs[0].set_title(f'Part distribution, {self.name}')
+
+        axs[1].hist(self.values, **kwargs)
+
+        for ax in axs:
+            ax.grid()
+
+
+if __name__ == '__main__':
+    p1 = Part(name='p1', nominal_value=1.0, tolerance=0.01, size=100000)
+    p1.show_dist(bins=51)
+    plt.show()

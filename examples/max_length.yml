@@ -1,24 +1,28 @@
-max value: 5.075
-min value: 4.925
+max value: 0.05
+min value: 0.0
 parts:
   - Part 0:
       distribution: norm
       nominal value: 1.0
-      tolerance: 0.05
+      tolerance: 0.01
       material: brass
   - Part 1:
       distribution: norm
-      nominal value: 1.0
-      tolerance: 0.05
+      nominal value: 2.0
+      tolerance: 0.01
   - Part 2:
       distribution: norm
-      nominal value: 1.0
-      tolerance: 0.05
+      nominal value: -0.5
+      tolerance: 0.01
   - Part 3:
       distribution: norm
       nominal value: 1.0
-      tolerance: 0.05
+      tolerance: 0.01
   - Part 4:
       distribution: norm
-      nominal value: 1.0
-      tolerance: 0.05
+      nominal value: 1.025
+      tolerance: 0.01
+  - Part 5:
+      distribution: norm
+      nominal value: -4.5
+      tolerance: 0.01

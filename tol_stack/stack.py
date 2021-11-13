@@ -1,6 +1,7 @@
 import logging
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import figaspect
 import numpy as np
 
 from tol_stack.part import Part
@@ -15,6 +16,7 @@ class StackPath:
     :param loglevel: the logging level that is to be implemented for the class
 
     """
+
     def __init__(self, max_value: float = None, min_value: float = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -70,6 +72,63 @@ class StackPath:
         self._stackups = finals
 
     def show_dist(self, **kwargs):
+        fig, axs = plt.subplots(2, 1)
+
+        axs[0].axvline(0, label='datum', alpha=0.6)
+
+        finals = np.zeros(len(self.parts[0].values))
+        for i, part in enumerate(self.parts):
+            part.refresh()
+            finals += part.values
+            axs[0].hist(finals, histtype='step', bins=31, label=f'{part.name}')
+
+        # place green/red zones on top plot
+        if self.min_value is not None and self.max_value is not None:
+            axs[0].axvspan(self.min_value, self.max_value, color='green', zorder=-1, label='target', alpha=0.5)
+
+        # plt.legend(bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
+        axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
+        axs[0].set_title(f'Stackup')
+        axs[0].grid()
+
+        axs[1].hist(finals, histtype='step', bins=31,
+                    label='Distribution of final')
+
+        if self.min_value is not None:
+            interference = [v for v in self._stackups if v < self.min_value]
+            if len(interference) > 0:
+                interference_percent = 100.0 * len(interference) / len(
+                    self._stackups)
+
+                x0, x1 = axs[1].get_xlim()
+                y0, y1 = axs[1].get_ylim()
+                axs[1].axvspan(x0, self.min_value, color='red', zorder=-2,
+                               alpha=0.1)
+                axs[1].axvline(self.min_value, color='red', zorder=-1)
+                axs[1].text(x=self.min_value, y=((y1 - y0) * 0.9),
+                            s=f'{interference_percent:.02f}% below minimum',
+                            color='red', horizontalalignment='right')
+
+        if self.max_value is not None:
+            interference = [v for v in self._stackups if v > self.max_value]
+
+            if len(interference) > 0:
+                interference_percent = 100.0 * len(interference) / len(
+                    self._stackups)
+
+                x0, x1 = axs[1].get_xlim()
+                y0, y1 = axs[1].get_ylim()
+                axs[1].axvspan(self.max_value, x1, color='red', zorder=-2,
+                               alpha=0.1)
+                axs[1].axvline(self.max_value, color='red', zorder=-1)
+                axs[1].text(x=self.max_value, y=((y1 - y0) * 0.9),
+                            s=f'{interference_percent:.02f}% above maximum',
+                            color='red', horizontalalignment='left')
+
+        fig.tight_layout()
+        return fig
+
+    def show_dist2(self, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
@@ -88,11 +147,13 @@ class StackPath:
             interference = [v for v in self._stackups if v > self.max_value]
 
             if len(interference) > 0:
-                interference_percent = 100.0 * len(interference) / len(self._stackups)
+                interference_percent = 100.0 * len(interference) / len(
+                    self._stackups)
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(self.max_value, x1, color='red', zorder=-2, alpha=0.1)
+                ax.axvspan(self.max_value, x1, color='red', zorder=-2,
+                           alpha=0.1)
                 ax.axvline(self.max_value, color='red', zorder=-1)
                 ax.text(x=self.max_value, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% above maximum',
@@ -104,11 +165,13 @@ class StackPath:
             interference = [v for v in self._stackups if v < self.min_value]
 
             if len(interference) > 0:
-                interference_percent = 100.0 * len(interference) / len(self._stackups)
+                interference_percent = 100.0 * len(interference) / len(
+                    self._stackups)
 
                 x0, x1 = ax.get_xlim()
                 y0, y1 = ax.get_ylim()
-                ax.axvspan(x0, self.min_value, color='red', zorder=-2, alpha=0.1)
+                ax.axvspan(x0, self.min_value, color='red', zorder=-2,
+                           alpha=0.1)
                 ax.axvline(self.min_value, color='red', zorder=-1)
                 ax.text(x=self.min_value, y=((y1 - y0) * 0.9),
                         s=f'{interference_percent:.02f}% below minimum',
@@ -148,14 +211,14 @@ if __name__ == '__main__':
 
     sp.analyze()
 
-    #part0.show_dist(density=True, bins=31)
-    #plt.show()
+    # part0.show_dist(density=True, bins=31)
+    # plt.show()
 
-    #part1.show_dist(density=True, bins=31)
-    #plt.show()
+    # part1.show_dist(density=True, bins=31)
+    # plt.show()
 
-    #part2.show_dist(density=True, bins=31)
-    #plt.show()
+    # part2.show_dist(density=True, bins=31)
+    # plt.show()
 
-    sp.show_dist(bins=31)
+    sp.show_dist()
     plt.show()
