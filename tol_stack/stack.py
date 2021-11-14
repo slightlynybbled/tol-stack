@@ -191,6 +191,8 @@ class StackPath:
             ax.grid()
             ax.set_aspect(1)
 
+        fig.tight_layout()
+
         return fig
 
 
