@@ -1,5 +1,8 @@
 import logging
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 import tol_stack.distributions as distributions
 
 
@@ -72,6 +75,7 @@ class Part:
         self._skewiness = skewiness
 
         self.lengths = None
+        self.concentricities = None
 
         self.refresh()
 
@@ -106,7 +110,8 @@ class Part:
             if self.distribution == 'norm':
                 self.lengths = distributions.norm(
                     loc=self.nominal_length,
-                    scale=self.tolerance / 3, size=self._size
+                    scale=self.tolerance / 3,
+                    size=self._size
                 )
             elif self.distribution == 'norm-screened':
                 self.lengths = distributions.norm_screened(
@@ -160,7 +165,19 @@ class Part:
                                  f'appears to be invalid')
 
         if self.concentricity is not None:
-            raise ValueError('concentricity not currently implemented')
+            if self.distribution == 'norm':
+                r = distributions.norm(
+                    loc=0,
+                    scale=self.concentricity / 3,
+                    size=self._size
+                )
+                theta = np.random.uniform(0.0, 2*np.pi, size=self._size)
+                self.concentricities = r * np.exp(1j*theta)
+
+            else:
+                raise ValueError('currently, only the "norm" distribution '
+                                 'is implemented for concentricity '
+                                 'calculations')
 
         if self.runout is not None:
             raise ValueError('runout not currently implemented')
@@ -172,6 +189,9 @@ class Part:
         :param kwargs: All keyword arguments must be valid for matplotlib.pyplot.hist
         :return: Figure
         """
+        if self.lengths is None:
+            raise AttributeError('this part has no length attributes')
+
         fig, axs = plt.subplots(2)
 
         # show a "zoomed out" view with the datum and the dimension
@@ -184,10 +204,45 @@ class Part:
         for ax in axs:
             ax.grid()
 
+        return fig
+
+    def show_concentricity_dist(self, **kwargs):
+        if self.concentricities is None:
+            raise AttributeError('this part has no concentricity attributes')
+
+        # semi-smart adjustment of alpha
+        fig, ax = plt.subplots()
+
+        alpha = 1000 / len(self.concentricities)
+        alpha = alpha if alpha < 1.0 else 1.0
+        alpha = alpha if alpha > 0.1 else 0.1
+
+        ax.scatter(
+            self.concentricities.real,
+            self.concentricities.imag,
+            label='samples',
+            s=1.0,
+            alpha=alpha
+        )
+        ax.add_patch(
+            plt.Circle((0, 0), self.concentricity,
+                       fill=False, label='tolerance',
+                       color='red', alpha=0.5, zorder=-1)
+        )
+        ax.set_aspect(1)
+        ax.set_title('Concentricity Samples')
+
+        ax.grid()
+        ax.legend()
+
+        return fig
+
 
 if __name__ == '__main__':
     p1 = Part(name='p1',
               concentricity=0.02,
-              size=100000)
-    p1.show_length_dist(bins=51)
+              size=2000)
+    #p1.show_length_dist(bins=51)
+    p1.show_concentricity_dist()
+
     plt.show()
