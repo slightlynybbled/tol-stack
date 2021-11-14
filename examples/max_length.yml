@@ -1,5 +1,6 @@
-max value: 0.05
-min value: 0.0
+max length: 0.05
+min length: 0.0
+
 parts:
   - Part 0:
       distribution: norm

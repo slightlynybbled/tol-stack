@@ -107,7 +107,7 @@ class PartsFrame(_BaseFrame):
                 dist_entry = tk.Entry(self, text=part.distribution, font=self._font, relief='sunken')
                 dist_entry.grid(row=row, column=1, sticky='ew')
 
-                nom_entry = tk.Entry(self, text=part.nominal_value, font=self._font, relief='sunken')
+                nom_entry = tk.Entry(self, text=part.nominal_length, font=self._font, relief='sunken')
                 nom_entry.grid(row=row, column=2, sticky='ew')
 
                 tol_entry = tk.Entry(self, text=part.tolerance, font=self._font, relief='sunken')

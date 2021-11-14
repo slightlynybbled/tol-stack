@@ -19,8 +19,11 @@ class Part:
     as is specified for the `nominal_value` and `tolerance`
     """
     def __init__(self, name: str,
-                 nominal_length: float, tolerance: float,
                  distribution: str = 'norm', size: int = 10000,
+                 nominal_length: float = None,
+                 tolerance: float = None,
+                 concentricity: float = None,
+                 runout: float = None,
                  limits: (tuple, float) = None,
                  material: str = None,
                  cte: str = None,
@@ -36,8 +39,10 @@ class Part:
 
         self.name = name
         self.distribution = distribution.lower()
-        self.nominal_value = nominal_length
-        self.tolerance = abs(tolerance)
+        self.nominal_length = nominal_length
+        self.tolerance = abs(tolerance) if tolerance else tolerance
+        self.concentricity = concentricity  # todo: implement concentricity
+        self.runout = runout  # todo: implement runout
         self.material = material
         self.cte = cte
         self.comment = comment
@@ -51,13 +56,13 @@ class Part:
 
     def __repr__(self):
         return f'<Part "{self.name}" dist="{self.distribution}" ' \
-               f'nom={self.nominal_value:.03f} \u00b1{self.tolerance:.03f}>'
+               f'nom={self.nominal_length:.03f} \u00b1{self.tolerance:.03f}>'
 
     def to_dict(self):
         return {
             'name': self.name,
             'distribution': self.distribution,
-            'nominal value': self.nominal_value,
+            'nominal value': self.nominal_length,
             'tolerance': self.tolerance
         }
 
@@ -77,19 +82,19 @@ class Part:
 
         if self.distribution == 'norm':
             self.values = distributions.norm(
-                loc=self.nominal_value,
+                loc=self.nominal_length,
                 scale=self.tolerance / 3, size=self._size
             )
         elif self.distribution == 'norm-screened':
             self.values = distributions.norm_screened(
-                loc=self.nominal_value,
+                loc=self.nominal_length,
                 scale=self.tolerance / 3,
                 size=self._size,
                 limits=self._limits
             )
         elif self.distribution == 'norm-notched':
             self.values = distributions.norm_notched(
-                loc=self.nominal_value,
+                loc=self.nominal_length,
                 scale=self.tolerance / 3,
                 size=self._size,
                 limits=self._limits
@@ -101,7 +106,7 @@ class Part:
                 limit = self._limits
 
             self.values = distributions.norm_lt(
-                loc=self.nominal_value,
+                loc=self.nominal_length,
                 scale=self.tolerance / 3,
                 size=self._size,
                 limit=limit
@@ -113,7 +118,7 @@ class Part:
                 limit = self._limits
 
             self.values = distributions.norm_gt(
-                loc=self.nominal_value,
+                loc=self.nominal_length,
                 scale=self.tolerance / 3,
                 size=self._size,
                 limit=limit

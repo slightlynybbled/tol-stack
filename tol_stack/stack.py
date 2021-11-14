@@ -11,15 +11,20 @@ class StackPath:
     """
     The stack path analysis class.
 
-    :param max_value: a floating-point number
-    :param min_value: a floating-point number
+    :param max_length: a floating-point number; when present, indicates \
+    that the length of the parts is to be stacked and evaluated
+    :param min_length: a floating-point number; when present, indicates \
+    that the length of the parts is to be stacked and evaluated
+    :param max_concentricity: a floating-point number; when present, indicates \
+    that the concentricity of the parts is to be stacked and evaluated
     :param loglevel: the logging level that is to be implemented for the class
 
     """
 
     def __init__(self,
-                 max_value: float = None,
-                 min_value: float = None,
+                 max_length: float = None,
+                 min_length: float = None,
+                 max_concentricity: float = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -27,8 +32,9 @@ class StackPath:
         self.parts = []
         self._stackups = []
 
-        self.max_value = max_value
-        self.min_value = min_value
+        self.max_value = max_length
+        self.min_value = min_length
+        self.max_concentricity = max_concentricity
 
     def add_part(self, part: Part):
         """
@@ -157,7 +163,7 @@ if __name__ == '__main__':
         size=size
     )
 
-    sp = StackPath(max_value=0.05, min_value=0.00)
+    sp = StackPath(max_length=0.05, min_length=0.00)
     sp.add_part(part0)
     sp.add_part(part1)
     sp.add_part(part2)
