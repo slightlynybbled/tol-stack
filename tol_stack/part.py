@@ -19,11 +19,11 @@ class Part:
     :param runout: specifies runout as defined by GD&T; \
     not currently implemented
     :param limits: the limits of the distribution; if there are two limits on the distribution, then \
-    there are two values to be passed as a tuple; else, if the distribution is expecting a single value, \
+    there are two lengths to be passed as a tuple; else, if the distribution is expecting a single value, \
     then this value will be a float
     :param material: essentially, a comment at this point, but we may
     wish to make this into a placeholder which allows a lookup of
-    common CTE values
+    common CTE lengths
     :param cte: coefficient of thermal expansion in (length / deg C) \
     where length is the same unit \
     as is specified for the `nominal_length` and `tolerance`
@@ -71,7 +71,7 @@ class Part:
         self._size = size
         self._skewiness = skewiness
 
-        self.values = None
+        self.lengths = None
 
         self.refresh()
 
@@ -102,63 +102,70 @@ class Part:
         if size is not None:
             self._size = size
 
-        if self.distribution == 'norm':
-            self.values = distributions.norm(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3, size=self._size
-            )
-        elif self.distribution == 'norm-screened':
-            self.values = distributions.norm_screened(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3,
-                size=self._size,
-                limits=self._limits
-            )
-        elif self.distribution == 'norm-notched':
-            self.values = distributions.norm_notched(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3,
-                size=self._size,
-                limits=self._limits
-            )
-        elif self.distribution == 'norm-lt':
-            if isinstance(self._limits, tuple):
-                limit, *_ = self._limits
+        if self.nominal_length is not None:
+            if self.distribution == 'norm':
+                self.lengths = distributions.norm(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3, size=self._size
+                )
+            elif self.distribution == 'norm-screened':
+                self.lengths = distributions.norm_screened(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3,
+                    size=self._size,
+                    limits=self._limits
+                )
+            elif self.distribution == 'norm-notched':
+                self.lengths = distributions.norm_notched(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3,
+                    size=self._size,
+                    limits=self._limits
+                )
+            elif self.distribution == 'norm-lt':
+                if isinstance(self._limits, tuple):
+                    limit, *_ = self._limits
+                else:
+                    limit = self._limits
+
+                self.lengths = distributions.norm_lt(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3,
+                    size=self._size,
+                    limit=limit
+                )
+            elif self.distribution == 'norm-gt':
+                if isinstance(self._limits, tuple):
+                    limit, *_ = self._limits
+                else:
+                    limit = self._limits
+
+                self.lengths = distributions.norm_gt(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3,
+                    size=self._size,
+                    limit=limit
+                )
+
+            elif self.distribution == 'skew-normal':
+                self.lengths = distributions.skew_normal(
+                    loc=self.nominal_length,
+                    scale=self.tolerance / 3,
+                    size=self._size,
+                    skewiness=self._skewiness
+                )
+
             else:
-                limit = self._limits
+                raise ValueError(f'distribution "{self.distribution}" '
+                                 f'appears to be invalid')
 
-            self.values = distributions.norm_lt(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3,
-                size=self._size,
-                limit=limit
-            )
-        elif self.distribution == 'norm-gt':
-            if isinstance(self._limits, tuple):
-                limit, *_ = self._limits
-            else:
-                limit = self._limits
+        if self.concentricity is not None:
+            raise ValueError('concentricity not currently implemented')
 
-            self.values = distributions.norm_gt(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3,
-                size=self._size,
-                limit=limit
-            )
+        if self.runout is not None:
+            raise ValueError('runout not currently implemented')
 
-        elif self.distribution == 'skew-normal':
-            self.values = distributions.skew_normal(
-                loc=self.nominal_length,
-                scale=self.tolerance / 3,
-                size=self._size,
-                skewiness=self._skewiness
-            )
-
-        else:
-            raise ValueError(f'distribution "{self.distribution}" '
-                             f'appears to be invalid')
-
-    def show_dist(self, **kwargs):
+    def show_length_dist(self, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
 
@@ -168,11 +175,11 @@ class Part:
         fig, axs = plt.subplots(2)
 
         # show a "zoomed out" view with the datum and the dimension
-        axs[0].hist(self.values, **kwargs)
+        axs[0].hist(self.lengths, **kwargs)
         axs[0].set_xlim(0)
         axs[0].set_title(f'Part distribution, {self.name}')
 
-        axs[1].hist(self.values, **kwargs)
+        axs[1].hist(self.lengths, **kwargs)
 
         for ax in axs:
             ax.grid()
@@ -180,10 +187,7 @@ class Part:
 
 if __name__ == '__main__':
     p1 = Part(name='p1',
-              nominal_length=1.0,
-              tolerance=0.01,
-              distribution='skew-normal',
-              skewiness=5.0,
+              concentricity=0.02,
               size=100000)
-    p1.show_dist(bins=51)
+    p1.show_length_dist(bins=51)
     plt.show()

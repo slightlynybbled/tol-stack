@@ -69,7 +69,7 @@ if __name__ == '__main__':
     parser.load_yaml(Path('../examples/max_length.yml'))
     parser.dump_yaml(Path('../examples/dump.yml'))
 
-    parser.stackup.show_dist()
+    parser.stackup.show_length_dist()
 
     plt.show()
 

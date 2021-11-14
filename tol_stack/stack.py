@@ -44,7 +44,7 @@ class StackPath:
         :return: None
         """
         if self.parts:
-            if len(part.values) != len(self.parts[0].values):
+            if len(part.lengths) != len(self.parts[0].lengths):
                 raise ValueError('part sample sizes do not match, '
                                  'cannot perform valid comparison')
 
@@ -73,21 +73,28 @@ class StackPath:
         for part in self.parts:
             part.refresh()
 
-        finals = np.zeros(len(self.parts[0].values))
+        finals = np.zeros(len(self.parts[0].lengths))
         for part in self.parts:
-            finals += part.values
+            finals += part.lengths
 
         self._stackups = finals
 
-    def show_dist(self, **kwargs):
+    def show_length_dist(self, **kwargs):
+        # as this is a length analysis, we are to ensure that
+        # all parts have lengths associated with them
+        for part in self.parts:
+            part.refresh()
+            if part.lengths is None:
+                raise AttributeError(f'part "{part.name}" does not '
+                                     f'have a proper length specification')
+
         fig, axs = plt.subplots(2, 1)
 
         axs[0].axvline(0, label='datum', alpha=0.6)
 
-        finals = np.zeros(len(self.parts[0].values))
+        finals = np.zeros(len(self.parts[0].lengths))
         for i, part in enumerate(self.parts):
-            part.refresh()
-            finals += part.values
+            finals += part.lengths
             axs[0].hist(finals, histtype='step', bins=31, label=f'{part.name}')
 
         # place green/red zones on top plot
@@ -179,5 +186,5 @@ if __name__ == '__main__':
     # part2.show_dist(density=True, bins=31)
     # plt.show()
 
-    sp.show_dist()
+    sp.show_length_dist()
     plt.show()

@@ -10,9 +10,9 @@ def norm(loc: float, scale: float, size: int) -> np.ndarray:
     Returns a random sampling from the normal distribution.
 
     :param loc: the nominal value
-    :param scale: the range of common values
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param scale: the range of common lengths
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
     return np.random.normal(loc=loc, scale=scale, size=size)
 
@@ -26,21 +26,21 @@ def norm_screened(loc: float, scale: float,
     a go/no-go fixture is in use.
 
     :param loc: the nominal value
-    :param scale: the range of common values
+    :param scale: the range of common lengths
     :param limits: a tuple of floats containing the low \
     and high screening limits
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
     if limits is not None:
         if len(limits) != 2:
             raise ValueError('"limits" must be a tuple of exactly two '
-                             'floating-point values')
+                             'floating-point lengths')
         low_limit, high_limit = limits
 
-        # removes values not in range
+        # removes lengths not in range
         values = values[(values >= low_limit) & (values <= high_limit)]
         count = 0
         while len(values) < size:
@@ -63,16 +63,16 @@ def norm_notched(loc: float, scale: float,
                  limits: Tuple[float, float], size: int) -> np.ndarray:
     """
     Returns a random sampling from the normal distribution
-    which has been screened in order to remove the nominal values.  This is a
+    which has been screened in order to remove the nominal lengths.  This is a
     common distribution when parts are being sorted and the leftover parts
     are used.
 
     :param loc: the nominal value
-    :param scale: the range of common values
+    :param scale: the range of common lengths
     :param limits: a tuple of floats containing the low \
     and high screening limits
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
 
     values = np.random.normal(loc=loc, scale=scale, size=size)
@@ -80,10 +80,10 @@ def norm_notched(loc: float, scale: float,
     if limits is not None:
         if len(limits) != 2:
             raise ValueError('"limits" must be a tuple of exactly two '
-                             'floating-point values')
+                             'floating-point lengths')
         low_limit, high_limit = limits
 
-        # removes values not in range
+        # removes lengths not in range
         values = values[(values <= low_limit) | (values >= high_limit)]
 
         count = 0
@@ -105,18 +105,18 @@ def norm_notched(loc: float, scale: float,
 def norm_lt(loc: float, scale: float, limit: float, size: int) -> np.ndarray:
     """
     Returns a random sampling from the normal distribution
-    which has been screened in order to remove values above the limit.
+    which has been screened in order to remove lengths above the limit.
 
     :param loc: the nominal value
-    :param scale: the range of common values
+    :param scale: the range of common lengths
     :param limit: a floats containing the upper screening limit
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
     values = np.random.normal(loc=loc, scale=scale,
                               size=size)
 
-    # removes values not in range
+    # removes lengths not in range
     values = values[values <= limit]
 
     count = 0
@@ -139,17 +139,17 @@ def norm_lt(loc: float, scale: float, limit: float, size: int) -> np.ndarray:
 def norm_gt(loc: float, scale: float, limit: float, size: int) -> np.ndarray:
     """
     Returns a random sampling from the normal distribution
-    which has been screened in order to remove values below the limit.
+    which has been screened in order to remove lengths below the limit.
 
     :param loc: the nominal value
-    :param scale: the range of common values
+    :param scale: the range of common lengths
     :param limit: a floats containing the lower screening limit
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
     values = np.random.normal(loc=loc, scale=scale, size=size)
 
-    # removes values not in range
+    # removes lengths not in range
     values = values[values >= limit]
 
     count = 0
@@ -179,9 +179,9 @@ def skew_normal(skewiness: float, loc: float,
     will create a left skew while a positive skewiness will create a \
     right skew; as skewiness increases, so does the skew of the distribution
     :param loc: the nominal value
-    :param scale: the range of common values
-    :param size: the number of samples within the common values
-    :return: a numpy array of values
+    :param scale: the range of common lengths
+    :param size: the number of samples within the common lengths
+    :return: a numpy array of lengths
     """
     values = skewnorm.rvs(skewiness, loc=loc, scale=scale, size=size)\
         .astype(np.float64)
