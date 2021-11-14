@@ -24,7 +24,7 @@ class StackPath:
     def __init__(self,
                  max_length: float = None,
                  min_length: float = None,
-                 max_concentricity: float = None,
+                 concentricity: float = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -34,7 +34,7 @@ class StackPath:
 
         self.max_value = max_length
         self.min_value = min_length
-        self.max_concentricity = max_concentricity
+        self.max_concentricity = concentricity
 
     def add_part(self, part: Part):
         """
@@ -44,9 +44,15 @@ class StackPath:
         :return: None
         """
         if self.parts:
-            if len(part.lengths) != len(self.parts[0].lengths):
-                raise ValueError('part sample sizes do not match, '
-                                 'cannot perform valid comparison')
+            if self.min_value is not None or self.max_value is not None:
+                if len(part.lengths) != len(self.parts[0].lengths):
+                    raise ValueError('part sample sizes do not match, '
+                                     'cannot perform valid comparison')
+            elif self.max_concentricity is not None:
+                if len(part.concentricities) != len(
+                        self.parts[0].concentricities):
+                    raise ValueError('part sample sizes do not match, '
+                                     'cannot perform valid comparison')
 
         self.parts.append(part)
 
@@ -63,21 +69,6 @@ class StackPath:
             return self.parts.copy()
 
         return self.parts
-
-    def analyze(self):
-        """
-        Refreshes the parts and ddds up all of the distributions of the parts.
-
-        :return: None
-        """
-        for part in self.parts:
-            part.refresh()
-
-        finals = np.zeros(len(self.parts[0].lengths))
-        for part in self.parts:
-            finals += part.lengths
-
-        self._stackups = finals
 
     def show_length_dist(self, **kwargs):
         # as this is a length analysis, we are to ensure that
@@ -99,9 +90,9 @@ class StackPath:
 
         # place green/red zones on top plot
         if self.min_value is not None and self.max_value is not None:
-            axs[0].axvspan(self.min_value, self.max_value, color='green', zorder=-1, label='target', alpha=0.5)
+            axs[0].axvspan(self.min_value, self.max_value, color='green',
+                           zorder=-1, label='target', alpha=0.5)
 
-        # plt.legend(bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
         axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
         axs[0].set_title(f'Length Stackup')
 
@@ -145,6 +136,61 @@ class StackPath:
             ax.grid()
 
         fig.tight_layout()
+        return fig
+
+    def show_concentricity_dist(self, **kwargs):
+        for part in self.parts:
+            part.refresh()
+            if part.concentricities is None:
+                raise AttributeError(f'part "{part.name}" does not '
+                                     f'have a proper concentricity specification')
+
+        fig, axs = plt.subplots(len(self.parts) + 1,
+                                figsize=(8, (len(self.parts) + 1) * 8),
+                                sharex=True, sharey=True)
+
+        thetas = np.zeros(len(self.parts[0].concentricities))
+        finals = np.zeros(len(self.parts[0].concentricities)) * np.exp(
+            1j * thetas)
+        for i, part in enumerate(self.parts):
+            finals += part.concentricities
+            axs[i].scatter(
+                part.concentricities.real,
+                part.concentricities.imag,
+                label=f'{part.name}',
+                s=0.1
+            )
+            axs[i].set_title(f'Concentricity for {part.name}')
+
+            # place limit circle on part
+            axs[i].add_patch(
+                plt.Circle((0, 0), self.max_concentricity,
+                           fill=False, label='tolerance',
+                           color='red', alpha=0.5, zorder=-1)
+            )
+
+        # plot final
+        axs[-1].set_title('Final Concentricity')
+        axs[-1].scatter(finals.real, finals.imag, s=0.1)
+        axs[-1].add_patch(
+            plt.Circle((0, 0), self.max_concentricity,
+                       fill=False, label='tolerance',
+                       color='red', alpha=0.5, zorder=-1)
+        )
+
+        # calculate how many are outside the circle and report as a percent
+        out_of_range = (abs(finals.real) >= self.max_concentricity).sum()
+        if out_of_range > 0:
+            total = len(finals)
+            percent_fail = 100 * out_of_range / total
+            axs[-1].text(x=0, y=self.max_concentricity,
+                         s=f'{percent_fail:.02f}% outside maximum total concentricity',
+                         color='red', horizontalalignment='center', verticalalignment='bottom')
+
+        for ax in axs:
+            ax.grid()
+            ax.set_aspect(1)
+
         return fig
 
 

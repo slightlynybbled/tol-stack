@@ -23,12 +23,11 @@ class Parser:
         values = {k.strip().replace(' ', '_').lower(): v
                   for k, v in data.items()
                   if k.strip().lower() != 'parts'}
+
         self._stack = StackPath(**values)
 
         for part in parts:
             self._stack.add_part(part)
-
-        self._stack.analyze()
 
     def dump_yaml(self, path: Path):
         """
@@ -66,10 +65,12 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     parser = Parser()
-    parser.load_yaml(Path('../examples/max_length.yml'))
+    #parser.load_yaml(Path('../examples/max_length.yml'))
+    parser.load_yaml(Path('../examples/concentricity.yml'))
     parser.dump_yaml(Path('../examples/dump.yml'))
 
-    parser.stackup.show_length_dist()
+    #parser.stackup.show_length_dist()
+    parser.stackup.show_concentricity_dist()
 
     plt.show()
 

@@ -1,0 +1,11 @@
+concentricity: 0.02
+
+parts:
+  - Part 0:
+      concentricity: 0.015
+  - Part 1:
+      concentricity: 0.015
+  - Part 2:
+      concentricity: 0.02
+  - Part 3:
+      concentricity: 0.015
