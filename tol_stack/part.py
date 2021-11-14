@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,6 +35,8 @@ class Part:
     :param skewiness: "0" skewiness, represents no skew; a negative skewiness \
     will create a left skew while a positive skewiness will create a \
     right skew; as skewiness increases, so does the skew of the distribution
+    :param image_path: the Path to an image, such as a PNG, which shows
+    the dimension(s)
     """
     def __init__(self, name: str,
                  distribution: str = 'norm',
@@ -47,6 +50,7 @@ class Part:
                  cte: str = None,
                  comment: str = None,
                  skewiness: float = None,
+                 image_path: Path = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -73,6 +77,7 @@ class Part:
         self._limits = limits
         self._size = size
         self._skewiness = skewiness
+        self._image_path = image_path
 
         self.lengths = None
         self.concentricities = None
