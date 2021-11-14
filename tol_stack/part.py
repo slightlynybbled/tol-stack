@@ -8,7 +8,7 @@ class Part:
     Represents a part, complete with tolerances as defined by the distributions.
 
     :param name: a string representing the part
-    :param nominal_value: the nominal value of the dimension
+    :param nominal_length: the nominal value of the dimension
     :param tolerance: the tolerance of the part
     :param distribution: the distribution of the dimension
     :param size: the number of samples to generate
@@ -19,7 +19,7 @@ class Part:
     as is specified for the `nominal_value` and `tolerance`
     """
     def __init__(self, name: str,
-                 nominal_value: float, tolerance: float,
+                 nominal_length: float, tolerance: float,
                  distribution: str = 'norm', size: int = 10000,
                  limits: (tuple, float) = None,
                  material: str = None,
@@ -36,7 +36,7 @@ class Part:
 
         self.name = name
         self.distribution = distribution.lower()
-        self.nominal_value = nominal_value
+        self.nominal_value = nominal_length
         self.tolerance = abs(tolerance)
         self.material = material
         self.cte = cte
@@ -143,6 +143,6 @@ class Part:
 
 
 if __name__ == '__main__':
-    p1 = Part(name='p1', nominal_value=1.0, tolerance=0.01, size=100000)
+    p1 = Part(name='p1', nominal_length=1.0, tolerance=0.01, size=100000)
     p1.show_dist(bins=51)
     plt.show()

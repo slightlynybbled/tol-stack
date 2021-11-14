@@ -128,7 +128,7 @@ class PartsFrame(_BaseFrame):
         part = Part(
             name=name,
             distribution=distribution,
-            nominal_value=nominal,
+            nominal_length=nominal,
             tolerance=tolerance
         )
 

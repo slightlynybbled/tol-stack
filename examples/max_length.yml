@@ -3,26 +3,26 @@ min value: 0.0
 parts:
   - Part 0:
       distribution: norm
-      nominal value: 1.0
+      nominal length: 1.0
       tolerance: 0.01
       material: brass
   - Part 1:
       distribution: norm
-      nominal value: 2.0
+      nominal length: 2.0
       tolerance: 0.01
   - Part 2:
       distribution: norm
-      nominal value: -0.5
+      nominal length: -0.5
       tolerance: 0.01
   - Part 3:
       distribution: norm
-      nominal value: 1.0
+      nominal length: 1.0
       tolerance: 0.01
   - Part 4:
       distribution: norm
-      nominal value: 1.025
+      nominal length: 1.025
       tolerance: 0.01
   - Part 5:
       distribution: norm
-      nominal value: -4.5
+      nominal length: -4.5
       tolerance: 0.01
