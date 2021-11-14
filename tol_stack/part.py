@@ -5,21 +5,36 @@ import tol_stack.distributions as distributions
 
 class Part:
     """
-    Represents a part, complete with tolerances as defined by the distributions.
+    Represents a part, complete with tolerances as defined
+    by the distributions.
 
     :param name: a string representing the part
     :param nominal_length: the nominal value of the dimension
-    :param tolerance: the tolerance of the part
     :param distribution: the distribution of the dimension
     :param size: the number of samples to generate
+    :param nominal_length: the nominal value of the dimension
+    :param tolerance: the tolerance of the part
+    :param concentricity: specifies concentricity as defined by GD&T; not \
+    currently implemented
+    :param runout: specifies runout as defined by GD&T; \
+    not currently implemented
     :param limits: the limits of the distribution; if there are two limits on the distribution, then \
     there are two values to be passed as a tuple; else, if the distribution is expecting a single value, \
     then this value will be a float
-    :param cte: coefficient of thermal expansion in (length / deg C) where length is the same unit \
-    as is specified for the `nominal_value` and `tolerance`
+    :param material: essentially, a comment at this point, but we may
+    wish to make this into a placeholder which allows a lookup of
+    common CTE values
+    :param cte: coefficient of thermal expansion in (length / deg C) \
+    where length is the same unit \
+    as is specified for the `nominal_length` and `tolerance`
+    :param comment: any comment about the part that the user wishes to add
+    :param skewiness: "0" skewiness, represents no skew; a negative skewiness \
+    will create a left skew while a positive skewiness will create a \
+    right skew; as skewiness increases, so does the skew of the distribution
     """
     def __init__(self, name: str,
-                 distribution: str = 'norm', size: int = 10000,
+                 distribution: str = 'norm',
+                 size: int = 10000,
                  nominal_length: float = None,
                  tolerance: float = None,
                  concentricity: float = None,
@@ -28,6 +43,7 @@ class Part:
                  material: str = None,
                  cte: str = None,
                  comment: str = None,
+                 skewiness: float = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -36,6 +52,10 @@ class Part:
         if distribution.lower() not in valid_distributions:
             raise ValueError(f'unexpected distribution "{distribution}"; '
                              f'distribution must be in "{valid_distributions}"')
+
+        if 'skew' in distribution and skewiness is None:
+            raise ValueError('the "skewiness" must be specified when '
+                             'a skewed distribution is specified')
 
         self.name = name
         self.distribution = distribution.lower()
@@ -49,6 +69,7 @@ class Part:
 
         self._limits = limits
         self._size = size
+        self._skewiness = skewiness
 
         self.values = None
 
@@ -68,7 +89,8 @@ class Part:
 
     @staticmethod
     def retrieve_distributions():
-        return ['norm', 'norm-screened', 'norm-notched', 'norm-lt', 'norm-gt']
+        return ['norm', 'norm-screened', 'norm-notched',
+                'norm-lt', 'norm-gt', 'skew-normal']
 
     def refresh(self, size: int = None):
         """
@@ -124,8 +146,17 @@ class Part:
                 limit=limit
             )
 
+        elif self.distribution == 'skew-normal':
+            self.values = distributions.skew_normal(
+                loc=self.nominal_length,
+                scale=self.tolerance / 3,
+                size=self._size,
+                skewiness=self._skewiness
+            )
+
         else:
-            raise ValueError(f'distribution "{self.distribution}" appears to be invalid')
+            raise ValueError(f'distribution "{self.distribution}" '
+                             f'appears to be invalid')
 
     def show_dist(self, **kwargs):
         """
@@ -148,6 +179,11 @@ class Part:
 
 
 if __name__ == '__main__':
-    p1 = Part(name='p1', nominal_length=1.0, tolerance=0.01, size=100000)
+    p1 = Part(name='p1',
+              nominal_length=1.0,
+              tolerance=0.01,
+              distribution='skew-normal',
+              skewiness=5.0,
+              size=100000)
     p1.show_dist(bins=51)
     plt.show()
