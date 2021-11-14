@@ -103,8 +103,7 @@ class StackPath:
 
         # plt.legend(bbox_to_anchor=(0, 1), loc='upper left', ncol=1)
         axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
-        axs[0].set_title(f'Stackup')
-        axs[0].grid()
+        axs[0].set_title(f'Length Stackup')
 
         axs[1].hist(finals, histtype='step', bins=31,
                     label='Distribution of final')
@@ -139,6 +138,11 @@ class StackPath:
                 axs[1].text(x=self.max_value, y=((y1 - y0) * 0.9),
                             s=f'{interference_percent:.02f}% above maximum',
                             color='red', horizontalalignment='left')
+
+        # todo: would be nice to draw arrows on the plot from part to part
+
+        for ax in axs:
+            ax.grid()
 
         fig.tight_layout()
         return fig
