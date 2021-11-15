@@ -1,7 +1,6 @@
 import logging
 
 import matplotlib.pyplot as plt
-from matplotlib.figure import figaspect
 import numpy as np
 
 from tol_stack.part import Part
@@ -35,6 +34,14 @@ class StackPath:
         self.max_value = max_length
         self.min_value = min_length
         self.max_concentricity = concentricity
+
+    @property
+    def is_length(self):
+        return self.max_value is not None or self.min_value is not None
+
+    @property
+    def is_concentricity(self):
+        return self.max_concentricity is not None
 
     def add_part(self, part: Part):
         """
@@ -195,6 +202,9 @@ class StackPath:
 
         return fig
 
+    def report(self):
+        ...
+
 
 if __name__ == '__main__':
     size = 100000
@@ -226,8 +236,6 @@ if __name__ == '__main__':
     sp.add_part(part0)
     sp.add_part(part1)
     sp.add_part(part2)
-
-    sp.analyze()
 
     # part0.show_dist(density=True, bins=31)
     # plt.show()

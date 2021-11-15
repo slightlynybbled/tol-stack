@@ -8,6 +8,10 @@ class Parser:
     def __init__(self):
         self._stack = None
 
+    @property
+    def stack(self):
+        return self._stack
+
     def load_yaml(self, path: Path):
         with path.open(mode='r') as f:
             text = f.read()
@@ -55,10 +59,6 @@ class Parser:
 
         with path.open('w') as f:
             f.write(yaml.dump(data, sort_keys=False))
-
-    @property
-    def stackup(self):
-        return self._stack
 
 
 if __name__ == '__main__':
