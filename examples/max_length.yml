@@ -1,29 +1,26 @@
-max length: 0.05
-min length: 0.0
+name: Clearance Arm Tolerance Stackup
+description: The assembly must have a clearance between the bottom
+  of the base and the bottom surface of the arm between the defined
+  minimum and maximum values.
+
+  The goal is to get 99.7% or greater of the assemblies to meet tolerance.
+
+max length: 0.975
+min length: 0.950
+image paths:
+  - examples/max_length_files/assembly0.png
+  - examples/max_length_files/assembly1.png
 
 parts:
-  - Part 0:
+  - Base:
+      distribution: norm
+      nominal length: 0.1
+      tolerance: 0.01
+  - Riser:
       distribution: norm
       nominal length: 1.0
       tolerance: 0.01
-      material: brass
-  - Part 1:
+  - Arm:
       distribution: norm
-      nominal length: 2.0
-      tolerance: 0.01
-  - Part 2:
-      distribution: norm
-      nominal length: -0.5
-      tolerance: 0.01
-  - Part 3:
-      distribution: norm
-      nominal length: 1.0
-      tolerance: 0.01
-  - Part 4:
-      distribution: norm
-      nominal length: 1.025
-      tolerance: 0.01
-  - Part 5:
-      distribution: norm
-      nominal length: -4.5
+      nominal length: -0.25
       tolerance: 0.01

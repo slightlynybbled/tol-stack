@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from time import sleep
 
 import click
 from tqdm import tqdm
@@ -34,15 +35,14 @@ def main(file):
 
     print(f'{len(paths)} files found for processing...')
 
+    sleep(0.01)  # minor sleep to preserve console output order
     for path in tqdm(paths):
         parser = Parser()
         parser.load_yaml(path)
         stack = parser.stack
-        report = StackupReport(stackpath=stack)
+        StackupReport(stackpath=stack)
 
-    print('complete!')
-
-
+    sleep(0.01)  # minor sleep to preserve console output order
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

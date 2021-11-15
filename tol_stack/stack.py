@@ -1,8 +1,10 @@
 import logging
 from pathlib import Path
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 from tol_stack.part import Part
 
@@ -11,20 +13,23 @@ class StackPath:
     """
     The stack path analysis class.
 
+    :param name: the name of the stack path
+    :param description: a brief description of the stack path intent
+    :param image_paths: a single path or a list of paths to \
+    different images that clarify the stack path.
     :param max_length: a floating-point number; when present, indicates \
     that the length of the parts is to be stacked and evaluated
     :param min_length: a floating-point number; when present, indicates \
     that the length of the parts is to be stacked and evaluated
-    :param max_concentricity: a floating-point number; when present, indicates \
+    :param concentricity: a floating-point number; when present, indicates \
     that the concentricity of the parts is to be stacked and evaluated
     :param loglevel: the logging level that is to be implemented for the class
-
     """
 
     def __init__(self,
                  name: str = 'Tolerance Stackup Report',
                  description: str = None,
-                 image_path: Path = None,
+                 image_paths: (Path, List[Path]) = None,
                  max_length: float = None,
                  min_length: float = None,
                  concentricity: float = None,
@@ -40,7 +45,17 @@ class StackPath:
 
         self.name = name
         self.description = description
-        self.image_path = image_path
+
+        if isinstance(image_paths, list):
+            image_paths = [Path(ip) for ip in image_paths]
+        else:
+            image_paths = [Path(image_paths)]
+
+        if image_paths is not None:
+            if isinstance(image_paths, list):
+                self.images = [Image.open(ip) for ip in image_paths]
+            else:
+                raise ValueError('image_paths must be of type `Path` or `List[Path]`')
 
     @property
     def is_length(self):
