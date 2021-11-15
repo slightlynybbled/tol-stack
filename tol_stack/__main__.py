@@ -5,6 +5,7 @@ import click
 from tqdm import tqdm
 
 from tol_stack.parsing import Parser
+from tol_stack.report import StackupReport
 from tol_stack.version import __version__
 
 _logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ def main(file):
         parser = Parser()
         parser.load_yaml(path)
         stack = parser.stack
+        report = StackupReport(stackpath=stack)
 
     print('complete!')
 

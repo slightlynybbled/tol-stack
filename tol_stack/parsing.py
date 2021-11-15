@@ -42,10 +42,10 @@ class Parser:
         """
         data = {}
 
-        if self._stack.max_value is not None:
-            data['max value'] = self._stack.max_value
-        if self._stack.min_value is not None:
-            data['min value'] = self._stack.min_value
+        if self._stack.max_length is not None:
+            data['max value'] = self._stack.max_length
+        if self._stack.min_length is not None:
+            data['min value'] = self._stack.min_length
 
         parts = [part.to_dict() for part in self._stack.parts]
         data['parts'] = []
@@ -65,12 +65,13 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     parser = Parser()
-    #parser.load_yaml(Path('../examples/max_length.yml'))
-    parser.load_yaml(Path('../examples/concentricity.yml'))
-    parser.dump_yaml(Path('../examples/dump.yml'))
+    parser.load_yaml(Path('examples/max_length.yml'))
+    # parser.load_yaml(Path('../examples/concentricity.yml'))
+    parser.dump_yaml(Path('examples/dump.yml'))
 
-    #parser.stackup.show_length_dist()
-    parser.stackup.show_concentricity_dist()
+    parser.stack.show_length_dist()
+    # parser.stack.show_concentricity_dist()
 
-    plt.show()
+    # plt.show()
+    # parser.stack.report()
 

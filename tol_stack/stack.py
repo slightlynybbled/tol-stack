@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,6 +23,8 @@ class StackPath:
 
     def __init__(self,
                  name: str = 'Tolerance Stackup Report',
+                 description: str = None,
+                 image_path: Path = None,
                  max_length: float = None,
                  min_length: float = None,
                  concentricity: float = None,
@@ -35,7 +38,9 @@ class StackPath:
         self.min_length = min_length
         self.max_concentricity = concentricity
 
-        self._name = name
+        self.name = name
+        self.description = description
+        self.image_path = image_path
 
     @property
     def is_length(self):
@@ -201,9 +206,6 @@ class StackPath:
         fig.tight_layout()
 
         return fig
-
-    def report(self):
-        ...
 
 
 if __name__ == '__main__':
