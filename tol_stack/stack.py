@@ -21,6 +21,7 @@ class StackPath:
     """
 
     def __init__(self,
+                 name: str = 'Tolerance Stackup Report',
                  max_length: float = None,
                  min_length: float = None,
                  concentricity: float = None,
@@ -29,15 +30,16 @@ class StackPath:
         self._logger.setLevel(loglevel)
 
         self.parts = []
-        self._stackups = []
 
-        self.max_value = max_length
-        self.min_value = min_length
+        self.max_length = max_length
+        self.min_length = min_length
         self.max_concentricity = concentricity
+
+        self._name = name
 
     @property
     def is_length(self):
-        return self.max_value is not None or self.min_value is not None
+        return self.max_length is not None or self.min_length is not None
 
     @property
     def is_concentricity(self):
@@ -51,7 +53,7 @@ class StackPath:
         :return: None
         """
         if self.parts:
-            if self.min_value is not None or self.max_value is not None:
+            if self.min_length is not None or self.max_length is not None:
                 if len(part.lengths) != len(self.parts[0].lengths):
                     raise ValueError('part sample sizes do not match, '
                                      'cannot perform valid comparison')
@@ -77,7 +79,7 @@ class StackPath:
 
         return self.parts
 
-    def show_length_dist(self, **kwargs):
+    def show_length_dist(self):
         # as this is a length analysis, we are to ensure that
         # all parts have lengths associated with them
         for part in self.parts:
@@ -96,8 +98,8 @@ class StackPath:
             axs[0].hist(finals, histtype='step', bins=31, label=f'{part.name}')
 
         # place green/red zones on top plot
-        if self.min_value is not None and self.max_value is not None:
-            axs[0].axvspan(self.min_value, self.max_value, color='green',
+        if self.min_length is not None and self.max_length is not None:
+            axs[0].axvspan(self.min_length, self.max_length, color='green',
                            zorder=-1, label='target', alpha=0.5)
 
         axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
@@ -106,34 +108,32 @@ class StackPath:
         axs[1].hist(finals, histtype='step', bins=31,
                     label='Distribution of final')
 
-        if self.min_value is not None:
-            interference = [v for v in self._stackups if v < self.min_value]
+        if self.min_length is not None:
+            interference = [v for v in finals if v < self.min_length]
             if len(interference) > 0:
-                interference_percent = 100.0 * len(interference) / len(
-                    self._stackups)
+                interference_percent = 100.0 * len(interference) / len(finals)
 
                 x0, x1 = axs[1].get_xlim()
                 y0, y1 = axs[1].get_ylim()
-                axs[1].axvspan(x0, self.min_value, color='red', zorder=-2,
+                axs[1].axvspan(x0, self.min_length, color='red', zorder=-2,
                                alpha=0.1)
-                axs[1].axvline(self.min_value, color='red', zorder=-1)
-                axs[1].text(x=self.min_value, y=((y1 - y0) * 0.9),
+                axs[1].axvline(self.min_length, color='red', zorder=-1)
+                axs[1].text(x=self.min_length, y=((y1 - y0) * 0.9),
                             s=f'{interference_percent:.02f}% below minimum',
                             color='red', horizontalalignment='right')
 
-        if self.max_value is not None:
-            interference = [v for v in self._stackups if v > self.max_value]
+        if self.max_length is not None:
+            interference = [v for v in finals if v > self.max_length]
 
             if len(interference) > 0:
-                interference_percent = 100.0 * len(interference) / len(
-                    self._stackups)
+                interference_percent = 100.0 * len(interference) / len(finals)
 
                 x0, x1 = axs[1].get_xlim()
                 y0, y1 = axs[1].get_ylim()
-                axs[1].axvspan(self.max_value, x1, color='red', zorder=-2,
+                axs[1].axvspan(self.max_length, x1, color='red', zorder=-2,
                                alpha=0.1)
-                axs[1].axvline(self.max_value, color='red', zorder=-1)
-                axs[1].text(x=self.max_value, y=((y1 - y0) * 0.9),
+                axs[1].axvline(self.max_length, color='red', zorder=-1)
+                axs[1].text(x=self.max_length, y=((y1 - y0) * 0.9),
                             s=f'{interference_percent:.02f}% above maximum',
                             color='red', horizontalalignment='left')
 
@@ -145,7 +145,7 @@ class StackPath:
         fig.tight_layout()
         return fig
 
-    def show_concentricity_dist(self, **kwargs):
+    def show_concentricity_dist(self):
         for part in self.parts:
             part.refresh()
             if part.concentricities is None:
