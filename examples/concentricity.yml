@@ -6,6 +6,6 @@ parts:
   - Part 1:
       concentricity: 0.015
   - Part 2:
-      concentricity: 0.02
+      concentricity: 0.025
   - Part 3:
       concentricity: 0.015
