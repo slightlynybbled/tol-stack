@@ -178,7 +178,7 @@ class Part:
             elif self.distribution == 'skew-norm':
                 self.lengths = distributions.skew_normal(
                     loc=self.nominal_length,
-                    scale=self.tolerance,
+                    scale=self.tolerance / 3,
                     size=self._size,
                     skewiness=self._skewiness
                 )
