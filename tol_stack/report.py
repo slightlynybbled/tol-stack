@@ -1,3 +1,4 @@
+from io import BytesIO
 from datetime import datetime
 
 from fpdf import FPDF
@@ -31,18 +32,40 @@ class StackupReport(FPDF):
                 self.ln()
                 self.image(image)
 
-
         # create a part-by-part max/min length analysis,
         # including comments, pictures, and distributions
         for part in self.stackpath.parts:
             self.add_page()
             self.set_font(self.font_name, "B", 14)
-            self.cell(185, 10, f'{part.name}')
+            self.cell(185, 10, f'{part.name}', ln=1)
 
-            # todo: show distribution
-            # todo: show measurements and characteristics
+            self.set_font(self.font_name, "", 14)
+            if part.nominal_length is not None:
+                self.cell(185, 10, f'nominal length: {part.nominal_length}', ln=1)
+            if part.tolerance is not None:
+                self.cell(185, 10, f'tolerance: {part.tolerance}', ln=1)
 
-        # todo: create a part-by-part concentricity analysis, including comments, pictures, and distributions
+            if part.images is not None:
+                for image in part.images:
+                    self.ln()
+                    self.image(image)
+
+            if part.comment is not None:
+                self.cell(185, 10, f'{part.comment}', ln=1)
+
+            # show part distribution
+            buffer = BytesIO()
+            fig = part.show_length_dist()
+            fig.savefig(buffer, format='png')
+            self.ln()
+            self.image(buffer, w=self.epw)
+
+        # todo: create stack path analysis
+        buffer = BytesIO()
+        fig = self.stackpath.show_length_dist()
+        fig.savefig(buffer, format='png')
+        self.ln()
+        self.image(buffer, w=self.epw)
 
         self.output(f'{self.stackpath.name}.pdf')
 

@@ -16,11 +16,17 @@ parts:
       distribution: norm
       nominal length: 0.1
       tolerance: 0.01
+      image paths: examples/max_length_files/base0.png
+      comment: anticipate that this part will come in around nominal thickness
   - Riser:
-      distribution: norm
+      distribution: skew-norm
+      skewiness: -3
       nominal length: 1.0
-      tolerance: 0.01
+      tolerance: 0.1
+      image paths: examples/max_length_files/riser0.png
+      comment: anticipate that this part will be machined down from stock
   - Arm:
       distribution: norm
-      nominal length: -0.25
+      nominal length: -0.15
       tolerance: 0.01
+      image paths: examples/max_length_files/arm0.png

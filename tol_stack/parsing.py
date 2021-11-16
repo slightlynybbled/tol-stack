@@ -66,12 +66,12 @@ if __name__ == '__main__':
 
     parser = Parser()
     parser.load_yaml(Path('examples/max_length.yml'))
-    # parser.load_yaml(Path('../examples/concentricity.yml'))
-    parser.dump_yaml(Path('examples/dump.yml'))
+    parser.load_yaml(Path('examples/concentricity.yml'))
+    # parser.dump_yaml(Path('examples/dump.yml'))
 
-    parser.stack.show_length_dist()
-    # parser.stack.show_concentricity_dist()
+    # parser.stack.show_length_dist()
+    parser.stack.show_concentricity_dist()
 
-    # plt.show()
+    plt.show()
     # parser.stack.report()
 

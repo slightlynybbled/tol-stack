@@ -29,7 +29,7 @@ class StackPath:
     def __init__(self,
                  name: str = 'Tolerance Stackup Report',
                  description: str = None,
-                 image_paths: (Path, List[Path]) = None,
+                 image_paths: (str, List[str], Path, List[Path]) = None,
                  max_length: float = None,
                  min_length: float = None,
                  concentricity: float = None,
@@ -46,16 +46,23 @@ class StackPath:
         self.name = name
         self.description = description
 
-        if isinstance(image_paths, list):
-            image_paths = [Path(ip) for ip in image_paths]
-        else:
-            image_paths = [Path(image_paths)]
-
+        # convert any strings to paths, convert to a list of paths
         if image_paths is not None:
             if isinstance(image_paths, list):
-                self.images = [Image.open(ip) for ip in image_paths]
+                image_paths = [Path(ip) if isinstance(ip, str) else ip for ip in image_paths]
             else:
-                raise ValueError('image_paths must be of type `Path` or `List[Path]`')
+                if isinstance(image_paths, str):
+                    image_paths = [Path(image_paths)]
+                else:
+                    image_paths = [image_paths]
+
+            if image_paths is not None:
+                if isinstance(image_paths, list):
+                    self.images = [Image.open(ip) for ip in image_paths]
+                else:
+                    raise ValueError('image_paths must be of type `Path` or `List[Path]`')
+        else:
+            self.images = None
 
     @property
     def is_length(self):
@@ -120,7 +127,7 @@ class StackPath:
         # place green/red zones on top plot
         if self.min_length is not None and self.max_length is not None:
             axs[0].axvspan(self.min_length, self.max_length, color='green',
-                           zorder=-1, label='target', alpha=0.5)
+                           zorder=-1, label='target', alpha=0.3)
 
         axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
         axs[0].set_title(f'Length Stackup')

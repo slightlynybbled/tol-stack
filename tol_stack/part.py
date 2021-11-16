@@ -1,8 +1,10 @@
 import logging
 from pathlib import Path
+from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 import tol_stack.distributions as distributions
 
@@ -40,7 +42,7 @@ class Part:
     """
     def __init__(self, name: str,
                  distribution: str = 'norm',
-                 size: int = 10000,
+                 size: int = 100000,
                  nominal_length: float = None,
                  tolerance: float = None,
                  concentricity: float = None,
@@ -50,7 +52,7 @@ class Part:
                  cte: str = None,
                  comment: str = None,
                  skewiness: float = None,
-                 image_path: Path = None,
+                 image_paths: [str, List[str], Path, List[Path]] = None,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -77,7 +79,23 @@ class Part:
         self._limits = limits
         self._size = size
         self._skewiness = skewiness
-        self._image_path = image_path
+
+        if image_paths is not None:
+            if isinstance(image_paths, list):
+                image_paths = [Path(ip) if isinstance(ip, str) else ip for ip in image_paths]
+            else:
+                if isinstance(image_paths, str):
+                    image_paths = [Path(image_paths)]
+                else:
+                    image_paths = [image_paths]
+
+            if image_paths is not None:
+                if isinstance(image_paths, list):
+                    self.images = [Image.open(ip) for ip in image_paths]
+                else:
+                    raise ValueError('image_paths must be of type `Path` or `List[Path]`')
+        else:
+            self.images = None
 
         self.lengths = None
         self.concentricities = None
@@ -99,7 +117,7 @@ class Part:
     @staticmethod
     def retrieve_distributions():
         return ['norm', 'norm-screened', 'norm-notched',
-                'norm-lt', 'norm-gt', 'skew-normal']
+                'norm-lt', 'norm-gt', 'skew-norm']
 
     def refresh(self, size: int = None):
         """
@@ -157,10 +175,10 @@ class Part:
                     limit=limit
                 )
 
-            elif self.distribution == 'skew-normal':
+            elif self.distribution == 'skew-norm':
                 self.lengths = distributions.skew_normal(
                     loc=self.nominal_length,
-                    scale=self.tolerance / 3,
+                    scale=self.tolerance,
                     size=self._size,
                     skewiness=self._skewiness
                 )
@@ -200,11 +218,11 @@ class Part:
         fig, axs = plt.subplots(2)
 
         # show a "zoomed out" view with the datum and the dimension
-        axs[0].hist(self.lengths, **kwargs)
+        axs[0].hist(self.lengths, bins=31, **kwargs)
         axs[0].set_xlim(0)
         axs[0].set_title(f'Part distribution, {self.name}')
 
-        axs[1].hist(self.lengths, **kwargs)
+        axs[1].hist(self.lengths, bins=101, **kwargs)
 
         for ax in axs:
             ax.grid()
@@ -245,9 +263,13 @@ class Part:
 
 if __name__ == '__main__':
     p1 = Part(name='p1',
-              concentricity=0.02,
-              size=2000)
-    #p1.show_length_dist(bins=51)
-    p1.show_concentricity_dist()
+              distribution='skew-norm',
+              skewiness=20,
+              nominal_length=1,
+              tolerance=0.010,
+              size=100000)
+    # p1.show_length_dist(bins=51)
+    # p1.show_concentricity_dist()
+    p1.show_length_dist()
 
     plt.show()

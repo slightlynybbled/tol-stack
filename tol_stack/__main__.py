@@ -40,7 +40,11 @@ def main(file):
         parser = Parser()
         parser.load_yaml(path)
         stack = parser.stack
-        StackupReport(stackpath=stack)
+        try:
+            StackupReport(stackpath=stack)
+        except PermissionError:
+            print('The file coulld not be opened.  Do you '
+                  'have the file open in another program?')
 
     sleep(0.01)  # minor sleep to preserve console output order
 
