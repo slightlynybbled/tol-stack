@@ -115,24 +115,48 @@ class StackPath:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper length specification')
 
-        fig, axs = plt.subplots(2, 1)
+        fig, axs = plt.subplots(3, 1, figsize=(6, 9))
 
-        axs[0].axvline(0, label='datum', alpha=0.6)
+        num_of_parts = len(self.parts)
 
+        # determine rough plot length to size the arrow heads
+        head_width = new_width = 0
+        for part in self.parts:
+            new_width += part.nominal_length
+            if new_width > head_width:
+                head_width = new_width
+        head_width *= 0.05
+
+        # draw arrows
+        last_part_x = 0
+        for i in range(num_of_parts):
+            part = self.parts[i]
+            axs[0].arrow(y=i, dy=0, x=last_part_x, dx=part.nominal_length,
+                         length_includes_head=True, head_width=head_width)
+
+            last_part_x = last_part_x + part.nominal_length
+        axs[0].set_yticks(range(len(self.parts)))
+        axs[0].set_yticklabels([part.name for part in self.parts])
+        axs[0].invert_yaxis()
+        axs[0].set_title('Stackup Flow Chart')
+
+        # draw datum, then distributions of added errors.
+        axs[1].axvline(0, label='datum', alpha=0.6)
         finals = np.zeros(len(self.parts[0].lengths))
-        for i, part in enumerate(self.parts):
+        for i in range(num_of_parts):
+            part = self.parts[i]
             finals += part.lengths
-            axs[0].hist(finals, histtype='step', bins=31, label=f'{part.name}')
+            axs[1].hist(finals, histtype='step', bins=31, label=f'{part.name}')
 
         # place green/red zones on top plot
         if self.min_length is not None and self.max_length is not None:
-            axs[0].axvspan(self.min_length, self.max_length, color='green',
+            axs[1].axvspan(self.min_length, self.max_length, color='green',
                            zorder=-1, label='target', alpha=0.3)
 
-        axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
-        axs[0].set_title(f'Length Stackup')
+        axs[1].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
+        axs[1].set_title(f'Length Stackup')
 
-        axs[1].hist(finals, histtype='step', bins=31,
+        axs[2].hist(finals, histtype='step', bins=31,
                     label='Distribution of final')
 
         if self.min_length is not None:
@@ -140,12 +164,12 @@ class StackPath:
             if len(interference) > 0:
                 interference_percent = 100.0 * len(interference) / len(finals)
 
-                x0, x1 = axs[1].get_xlim()
-                y0, y1 = axs[1].get_ylim()
-                axs[1].axvspan(x0, self.min_length, color='red', zorder=-2,
+                x0, x1 = axs[2].get_xlim()
+                y0, y1 = axs[2].get_ylim()
+                axs[2].axvspan(x0, self.min_length, color='red', zorder=-2,
                                alpha=0.1)
-                axs[1].axvline(self.min_length, color='red', zorder=-1)
-                axs[1].text(x=self.min_length, y=((y1 - y0) * 0.9),
+                axs[2].axvline(self.min_length, color='red', zorder=-1)
+                axs[2].text(x=self.min_length, y=((y1 - y0) * 0.9),
                             s=f'{interference_percent:.02f}% below minimum',
                             color='red', horizontalalignment='right')
 
@@ -155,16 +179,14 @@ class StackPath:
             if len(interference) > 0:
                 interference_percent = 100.0 * len(interference) / len(finals)
 
-                x0, x1 = axs[1].get_xlim()
-                y0, y1 = axs[1].get_ylim()
-                axs[1].axvspan(self.max_length, x1, color='red', zorder=-2,
+                x0, x1 = axs[2].get_xlim()
+                y0, y1 = axs[2].get_ylim()
+                axs[2].axvspan(self.max_length, x1, color='red', zorder=-2,
                                alpha=0.1)
-                axs[1].axvline(self.max_length, color='red', zorder=-1)
-                axs[1].text(x=self.max_length, y=((y1 - y0) * 0.9),
+                axs[2].axvline(self.max_length, color='red', zorder=-1)
+                axs[2].text(x=self.max_length, y=((y1 - y0) * 0.9),
                             s=f'{interference_percent:.02f}% above maximum',
                             color='red', horizontalalignment='left')
-
-        # todo: would be nice to draw arrows on the plot from part to part
 
         for ax in axs:
             ax.grid()
