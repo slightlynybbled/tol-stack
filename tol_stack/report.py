@@ -60,7 +60,7 @@ class StackupReport(FPDF):
             self.ln()
             self.image(buffer, w=self.epw)
 
-        # todo: create stack path analysis
+        # create stack path analysis
         buffer = BytesIO()
         fig = self.stackpath.show_length_dist()
         fig.savefig(buffer, format='png')
