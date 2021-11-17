@@ -215,7 +215,7 @@ class Part:
         if self.lengths is None:
             raise AttributeError('this part has no length attributes')
 
-        fig, axs = plt.subplots(2)
+        fig, axs = plt.subplots(2, dpi=300)
 
         # show a "zoomed out" view with the datum and the dimension
         axs[0].hist(self.lengths, bins=31, **kwargs)
@@ -234,7 +234,7 @@ class Part:
             raise AttributeError('this part has no concentricity attributes')
 
         # semi-smart adjustment of alpha
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(dpi=300)
 
         alpha = 1000 / len(self.concentricities)
         alpha = alpha if alpha < 1.0 else 1.0

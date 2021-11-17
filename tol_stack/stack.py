@@ -211,7 +211,7 @@ class StackPath:
                                      f'have a proper concentricity specification')
 
         fig, axs = plt.subplots(len(self.parts) + 1,
-                                figsize=(8, (len(self.parts) + 1) * 8),
+                                figsize=(8, (len(self.parts) + 1) * 8), dpi=300,
                                 sharex=True, sharey=True)
 
         thetas = np.zeros(len(self.parts[0].concentricities))
