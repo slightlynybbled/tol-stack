@@ -115,7 +115,7 @@ class StackPath:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper length specification')
 
-        fig, axs = plt.subplots(3, 1, figsize=(6, 9))
+        fig, axs = plt.subplots(3, 1, figsize=(6, 9), dpi=300)
 
         num_of_parts = len(self.parts)
 
@@ -132,6 +132,7 @@ class StackPath:
         for i in range(num_of_parts):
             part = self.parts[i]
             axs[0].arrow(y=i, dy=0, x=last_part_x, dx=part.nominal_length,
+                         width=head_width / 3,
                          length_includes_head=True, head_width=head_width)
 
             last_part_x = last_part_x + part.nominal_length

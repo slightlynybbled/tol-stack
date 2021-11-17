@@ -48,6 +48,7 @@ def main(file):
 
     sleep(0.01)  # minor sleep to preserve console output order
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     main()
