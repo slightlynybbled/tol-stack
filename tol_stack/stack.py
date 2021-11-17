@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from typing import List
 
+from engineering_notation import EngNumber
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -117,6 +118,11 @@ class StackPath:
 
         fig, axs = plt.subplots(3, 1, figsize=(6, 9), dpi=300)
 
+        axs[0].axvline(0, label='datum', alpha=0.6)
+        if self.min_length is not None and self.max_length is not None:
+            axs[0].axvspan(self.min_length, self.max_length, color='green',
+                           zorder=-1, label='target', alpha=0.3)
+
         num_of_parts = len(self.parts)
 
         # determine rough plot length to size the arrow heads
@@ -140,6 +146,7 @@ class StackPath:
         axs[0].set_yticklabels([part.name for part in self.parts])
         axs[0].invert_yaxis()
         axs[0].set_title('Stackup Flow Chart')
+        axs[0].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
 
         # draw datum, then distributions of added errors.
         axs[1].axvline(0, label='datum', alpha=0.6)
@@ -149,16 +156,17 @@ class StackPath:
             finals += part.lengths
             axs[1].hist(finals, histtype='step', bins=31, label=f'{part.name}')
 
-        # place green/red zones on top plot
+        # place green/red zones on length stackup
         if self.min_length is not None and self.max_length is not None:
             axs[1].axvspan(self.min_length, self.max_length, color='green',
                            zorder=-1, label='target', alpha=0.3)
 
         axs[1].legend(bbox_to_anchor=(1.04, 1), loc="upper left")
-        axs[1].set_title(f'Length Stackup')
+        axs[1].set_title(f'Distribution by Length')
 
         axs[2].hist(finals, histtype='step', bins=31,
                     label='Distribution of final')
+        axs[2].set_title(f'Final Stackup, {EngNumber(len(finals))} Samples')
 
         if self.min_length is not None:
             interference = [v for v in finals if v < self.min_length]
