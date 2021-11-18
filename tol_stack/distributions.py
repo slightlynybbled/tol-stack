@@ -183,12 +183,7 @@ def skew_normal(skewiness: float, loc: float,
     :param size: the number of samples within the common lengths
     :return: a numpy array of lengths
     """
-    offset = skewiness * scale
-    if offset > scale:
-        offset = scale
-    elif offset < -scale:
-        offset = -scale
-    values = skewnorm.rvs(skewiness, loc=loc-offset, scale=scale, size=size)\
+    values = skewnorm.rvs(skewiness, loc=loc, scale=scale, size=size)\
         .astype(np.float64)
 
     return values

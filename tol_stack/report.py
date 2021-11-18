@@ -67,6 +67,12 @@ class StackupReport(FPDF):
             fig.savefig(buffer, format='png')
             self.image(buffer, w=self.epw)
 
+        # show relative distributions
+        buffer = BytesIO()
+        fig = self.stackpath.show_part_relative_dists()
+        fig.savefig(buffer, format='png')
+        self.image(buffer, w=self.epw)
+
         # create stack path analysis
         buffer = BytesIO()
         fig = self.stackpath.show_length_dist()

@@ -24,6 +24,7 @@ class StackPath:
     that the length of the parts is to be stacked and evaluated
     :param concentricity: a floating-point number; when present, indicates \
     that the concentricity of the parts is to be stacked and evaluated
+    :param size: the number of samples to create
     :param loglevel: the logging level that is to be implemented for the class
     """
 
@@ -34,6 +35,7 @@ class StackPath:
                  max_length: float = None,
                  min_length: float = None,
                  concentricity: float = None,
+                 size: int = 100000,
                  loglevel=logging.INFO):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._logger.setLevel(loglevel)
@@ -46,6 +48,7 @@ class StackPath:
 
         self.name = name
         self.description = description
+        self.size = size
 
         # convert any strings to paths, convert to a list of paths
         if image_paths is not None:
@@ -80,16 +83,7 @@ class StackPath:
         :param part: An instance of ``Part``
         :return: None
         """
-        if self.parts:
-            if self.min_length is not None or self.max_length is not None:
-                if len(part.lengths) != len(self.parts[0].lengths):
-                    raise ValueError('part sample sizes do not match, '
-                                     'cannot perform valid comparison')
-            elif self.max_concentricity is not None:
-                if len(part.concentricities) != len(
-                        self.parts[0].concentricities):
-                    raise ValueError('part sample sizes do not match, '
-                                     'cannot perform valid comparison')
+        part.set_size(self.size)
 
         self.parts.append(part)
 
@@ -107,14 +101,46 @@ class StackPath:
 
         return self.parts
 
-    def show_length_dist(self):
-        # as this is a length analysis, we are to ensure that
-        # all parts have lengths associated with them
+    def _refresh_parts(self):
         for part in self.parts:
             part.refresh()
             if part.lengths is None:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper length specification')
+
+    def show_part_relative_dists(self):
+        self._refresh_parts()
+
+        fig, axs = plt.subplots(len(self.parts), figsize=(6, 9), dpi=300, sharey=True)
+        fig.suptitle('Relative Part Distributions')
+
+        for i, part in enumerate(self.parts):
+            part.show_dist(axs[i])
+            axs[i].set_title(part.name)
+
+        # determine the widest max/min range on the plots
+        max_xrange = 0
+        for i, ax in enumerate(axs):
+            x0, x1 = ax.get_xlim()
+            xrange = abs(x0-x1)
+            if xrange > max_xrange:
+                max_xrange = xrange
+
+        # scale the plots appropriately so that relative
+        # contributions can be visually observed
+        for i, ax in enumerate(axs):
+            mean = self.parts[i].nominal_length
+            x0 = mean - max_xrange / 2
+            x1 = mean + max_xrange / 2
+            ax.set_xlim(x0, x1)
+
+        fig.tight_layout()
+        return fig
+
+    def show_length_dist(self):
+        # as this is a length analysis, we are to ensure that
+        # all parts have lengths associated with them
+        self._refresh_parts()
 
         fig, axs = plt.subplots(3, 1, figsize=(6, 9), dpi=300)
 
@@ -274,6 +300,8 @@ if __name__ == '__main__':
 
     part1 = Part(
         name='part1',
+        distribution='skew-norm',
+        skewiness=3,
         nominal_length=2.0,
         tolerance=0.01,
         limits=2.02,
@@ -301,5 +329,6 @@ if __name__ == '__main__':
     # part2.show_dist(density=True, bins=31)
     # plt.show()
 
-    sp.show_length_dist()
+    #sp.show_length_dist()
+    sp.show_part_relative_dists()
     plt.show()

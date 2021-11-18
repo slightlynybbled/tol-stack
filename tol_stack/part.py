@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from typing import List
 
+import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -106,6 +107,14 @@ class Part:
         return f'<Part "{self.name}" dist="{self.distribution}" ' \
                f'nom={self.nominal_length:.03f} \u00b1{self.tolerance:.03f}>'
 
+    @staticmethod
+    def retrieve_distributions():
+        return ['norm', 'norm-screened', 'norm-notched',
+                'norm-lt', 'norm-gt', 'skew-norm']
+
+    def set_size(self, size: int):
+        self._size = size
+
     def to_dict(self):
         return {
             'name': self.name,
@@ -113,11 +122,6 @@ class Part:
             'nominal value': self.nominal_length,
             'tolerance': self.tolerance
         }
-
-    @staticmethod
-    def retrieve_distributions():
-        return ['norm', 'norm-screened', 'norm-notched',
-                'norm-lt', 'norm-gt', 'skew-norm']
 
     def refresh(self, size: int = None):
         """
@@ -205,6 +209,19 @@ class Part:
         if self.runout is not None:
             raise ValueError('runout not currently implemented')
 
+    def show_scaled_dist(self, ax: matplotlib.pyplot.Axes, **kwargs):
+        ax.hist(self.lengths, bins=31, **kwargs)
+        if self.nominal_length > 0:
+            ax.set_xlim(left=0.0)
+        elif self.nominal_length < 0:
+            ax.set_xlim(right=0.0)
+
+        ax.grid()
+
+    def show_dist(self, ax: matplotlib.pyplot.Axes, **kwargs):
+        ax.hist(self.lengths, bins=101, **kwargs)
+        ax.grid()
+
     def show_length_dist(self, **kwargs):
         """
         Shows the distribution for the part on a matplotlib plot.
@@ -218,14 +235,10 @@ class Part:
         fig, axs = plt.subplots(2, dpi=300)
 
         # show a "zoomed out" view with the datum and the dimension
-        axs[0].hist(self.lengths, bins=31, **kwargs)
-        axs[0].set_xlim(0)
+        self.show_scaled_dist(ax=axs[0])
+        self.show_dist(ax=axs[1])
+
         axs[0].set_title(f'Part distribution, {self.name}')
-
-        axs[1].hist(self.lengths, bins=101, **kwargs)
-
-        for ax in axs:
-            ax.grid()
 
         return fig
 
@@ -264,7 +277,7 @@ class Part:
 if __name__ == '__main__':
     p1 = Part(name='p1',
               distribution='skew-norm',
-              skewiness=20,
+              skewiness=0.1,
               nominal_length=1,
               tolerance=0.010,
               size=100000)

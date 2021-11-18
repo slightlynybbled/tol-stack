@@ -11,22 +11,30 @@ image paths:
   - examples/max_length_files/assembly0.png
   - examples/max_length_files/assembly1.png
 
+size: 100000
+
 parts:
   - Base:
       distribution: norm
       nominal length: 0.1
       tolerance: 0.01
       image paths: examples/max_length_files/base0.png
-      comment: anticipate that this part will come in around nominal thickness
+      comment: assume this part will come in around nominal thickness and be used as-purchased;
+          thus, expect a normal distribution of parts
   - Riser:
       distribution: skew-norm
-      skewiness: -1
-      nominal length: 1.0
+      skewiness: -4
+      nominal length: 1.04
       tolerance: 0.01
       image paths: examples/max_length_files/riser0.png
-      comment: anticipate that this part will be machined down from stock
+      comment: part will be machined down from stock; as a result of human factors,
+          assume that there will be a skew in the parts provided as the machinist will
+          stop machining when parts meet tolerance
   - Arm:
-      distribution: norm
-      nominal length: -0.14
+      distribution: skew-norm
+      skewiness: -2
+      nominal length: -0.17
       tolerance: 0.01
       image paths: examples/max_length_files/arm0.png
+      comment: part step to be machined down from stock; therefore, due to human factors, expect
+          that there will be a slight right-skew to the distribution
