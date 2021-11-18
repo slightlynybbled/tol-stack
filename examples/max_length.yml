@@ -37,4 +37,4 @@ parts:
       tolerance: 0.01
       image paths: examples/max_length_files/arm0.png
       comment: part step to be machined down from stock; therefore, due to human factors, expect
-          that there will be a slight right-skew to the distribution
+          that there will be a slight skew to the distribution
