@@ -53,7 +53,8 @@ class StackPath:
         # convert any strings to paths, convert to a list of paths
         if image_paths is not None:
             if isinstance(image_paths, list):
-                image_paths = [Path(ip) if isinstance(ip, str) else ip for ip in image_paths]
+                image_paths = [Path(ip) if isinstance(ip, str) else ip for ip in
+                               image_paths]
             else:
                 if isinstance(image_paths, str):
                     image_paths = [Path(image_paths)]
@@ -64,7 +65,8 @@ class StackPath:
                 if isinstance(image_paths, list):
                     self.images = [Image.open(ip) for ip in image_paths]
                 else:
-                    raise ValueError('image_paths must be of type `Path` or `List[Path]`')
+                    raise ValueError(
+                        'image_paths must be of type `Path` or `List[Path]`')
         else:
             self.images = None
 
@@ -111,7 +113,8 @@ class StackPath:
     def show_part_relative_dists(self):
         self._refresh_parts()
 
-        fig, axs = plt.subplots(len(self.parts), figsize=(6, 9), dpi=300, sharey=True)
+        fig, axs = plt.subplots(len(self.parts), figsize=(6, 9), dpi=300,
+                                sharey=True)
         fig.suptitle('Relative Part Distributions')
 
         for i, part in enumerate(self.parts):
@@ -122,7 +125,7 @@ class StackPath:
         max_xrange = 0
         for i, ax in enumerate(axs):
             x0, x1 = ax.get_xlim()
-            xrange = abs(x0-x1)
+            xrange = abs(x0 - x1)
             if xrange > max_xrange:
                 max_xrange = xrange
 
@@ -249,7 +252,7 @@ class StackPath:
                 part.concentricities.real,
                 part.concentricities.imag,
                 label=f'{part.name}',
-                s=0.1
+                s=0.1,
             )
             axs[i].set_title(f'Concentricity for {part.name}')
 
@@ -276,7 +279,8 @@ class StackPath:
             percent_fail = 100 * out_of_range / total
             axs[-1].text(x=0, y=self.max_concentricity,
                          s=f'{percent_fail:.02f}% outside maximum total concentricity',
-                         color='red', horizontalalignment='center', verticalalignment='bottom')
+                         color='red', horizontalalignment='center',
+                         verticalalignment='bottom')
 
         for ax in axs:
             ax.grid()
@@ -290,45 +294,69 @@ class StackPath:
 if __name__ == '__main__':
     size = 100000
 
-    part0 = Part(
-        name='part0',
-        nominal_length=1.0,
-        tolerance=0.01,
-        limits=1.02,
-        size=size
-    )
-
-    part1 = Part(
-        name='part1',
-        distribution='skew-norm',
-        skewiness=3,
-        nominal_length=2.0,
-        tolerance=0.01,
-        limits=2.02,
-        size=size
-    )
-
-    part2 = Part(
-        name='part2',
-        nominal_length=-2.98,
-        tolerance=0.02,
-        size=size
-    )
-
-    sp = StackPath(max_length=0.05, min_length=0.00)
-    sp.add_part(part0)
-    sp.add_part(part1)
-    sp.add_part(part2)
-
-    # part0.show_dist(density=True, bins=31)
+    # parts = [
+    #     Part(name='part0',
+    #          nominal_length=1.0,
+    #          tolerance=0.01,
+    #          concentricity=0.005,
+    #          limits=1.02,
+    #          size=size
+    #          ),
+    #     Part(name='part1',
+    #          distribution='skew-norm',
+    #          skewiness=3,
+    #          nominal_length=2.0,
+    #          tolerance=0.01,
+    #          concentricity=0.005,
+    #          limits=2.02,
+    #          size=size
+    #          ),
+    #     Part(
+    #         name='part2',
+    #         nominal_length=-2.98,
+    #         tolerance=0.02,
+    #         concentricity=0.005,
+    #         size=size
+    #     )
+    # ]
+    #
+    # sp = StackPath(max_length=0.05, min_length=0.00, concentricity=0.05)
+    # for part in parts:
+    #     sp.add_part(part)
+    #
+    # fig0 = sp.show_part_relative_dists()
+    # fig1 = sp.show_length_dist()
+    # fig2 = sp.show_concentricity_dist()
+    #
+    # fig0.savefig('relative_dist.png')
+    # fig1.savefig('length_dist.png')
+    #
     # plt.show()
 
-    # part1.show_dist(density=True, bins=31)
-    # plt.show()
+    parts = [
+        Part(name='part0',
+             concentricity=0.005,
+             limits=1.02,
+             size=size
+             ),
+        Part(name='part1',
+             concentricity=0.003,
+             limits=2.02,
+             size=size
+             ),
+        Part(
+            name='part2',
+            concentricity=0.008,
+            size=size
+        )
+    ]
 
-    # part2.show_dist(density=True, bins=31)
-    # plt.show()
+    sp = StackPath(concentricity=0.01)
+    for part in parts:
+        sp.add_part(part)
 
-    #sp.show_length_dist()
-    sp.show_part_relative_dists()
+    fig0 = sp.show_concentricity_dist()
+
+    fig0.savefig('concentricity_dist.png')
+
     plt.show()
