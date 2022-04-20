@@ -27,10 +27,11 @@ class Parser:
         values = {k.strip().replace(' ', '_').lower(): v
                   for k, v in data.items()
                   if k.strip().lower() != 'parts'}
-
+        print(values)
         self._stack = StackPath(**values)
 
         for part in parts:
+            print(part)
             self._stack.add_part(part)
 
     def dump_yaml(self, path: Path):

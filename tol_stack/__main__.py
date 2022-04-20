@@ -40,6 +40,7 @@ def main(file):
         parser = Parser()
         parser.load_yaml(path)
         stack = parser.stack
+        print(stack)
         try:
             StackupReport(stackpath=stack)
         except PermissionError:

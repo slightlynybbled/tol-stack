@@ -25,8 +25,9 @@ class Part:
     currently implemented
     :param runout: specifies runout as defined by GD&T; \
     not currently implemented
-    :param limits: the limits of the distribution; if there are two limits on the distribution, then \
-    there are two lengths to be passed as a tuple; else, if the distribution is expecting a single value, \
+    :param limits: the limits of the distribution; if there are two limits \
+    on the distribution, then there are two lengths to be passed as a tuple; \
+    else, if the distribution is expecting a single value, \
     then this value will be a float
     :param material: essentially, a comment at this point, but we may
     wish to make this into a placeholder which allows a lookup of
@@ -104,8 +105,16 @@ class Part:
         self.refresh()
 
     def __repr__(self):
-        return f'<Part "{self.name}" dist="{self.distribution}" ' \
-               f'nom={self.nominal_length:.03f} \u00b1{self.tolerance:.03f}>'
+        string = f'<Part name="{self.name}" dist="{self.distribution}"'
+        if self.nominal_length:
+            string += f' nom={self.nominal_length:.03f}'
+        if self.concentricity:
+            string += f' concentricity={self.concentricity:.03f}'
+        if self.tolerance:
+            string += f' \u00b1{self.tolerance:.03f}'
+
+        string += '>'
+        return string
 
     @staticmethod
     def retrieve_distributions():

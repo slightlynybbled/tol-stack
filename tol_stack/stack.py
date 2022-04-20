@@ -292,7 +292,7 @@ class StackPath:
 
 
 if __name__ == '__main__':
-    size = 100000
+    size = 1000
 
     # parts = [
     #     Part(name='part0',
@@ -351,7 +351,7 @@ if __name__ == '__main__':
         )
     ]
 
-    sp = StackPath(concentricity=0.01)
+    sp = StackPath(concentricity=0.01, size=size)
     for part in parts:
         sp.add_part(part)
 
