@@ -239,52 +239,59 @@ class StackPath:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper concentricity specification')
 
-        fig, axs = plt.subplots(len(self.parts) + 1,
-                                figsize=(8, (len(self.parts) + 1) * 8), dpi=300,
-                                sharex=True, sharey=True)
+        fig, axs = plt.subplots(len(self.parts) + 1, 2,
+                                figsize=(16, (len(self.parts) + 1) * 8), dpi=300)
 
         thetas = np.zeros(len(self.parts[0].concentricities))
         finals = np.zeros(len(self.parts[0].concentricities)) * np.exp(
             1j * thetas)
         for i, part in enumerate(self.parts):
             finals += part.concentricities
-            axs[i].scatter(
+            axs[i][0].scatter(
                 part.concentricities.real,
                 part.concentricities.imag,
                 label=f'{part.name}',
                 s=0.1,
             )
-            axs[i].set_title(f'Concentricity for {part.name}')
+            axs[i][0].set_title(f'Concentricity for {part.name}')
 
             # place limit circle on part
-            axs[i].add_patch(
+            axs[i][0].add_patch(
                 plt.Circle((0, 0), self.max_concentricity,
                            fill=False, label='tolerance',
                            color='red', alpha=0.5, zorder=-1)
             )
 
+            axs[i][1].hist(abs(part.concentricities), bins=31)
+
         # plot final
-        axs[-1].set_title('Final Concentricity')
-        axs[-1].scatter(finals.real, finals.imag, s=0.1)
-        axs[-1].add_patch(
+        axs[-1][0].set_title('Final Concentricity')
+        axs[-1][0].scatter(finals.real, finals.imag, s=0.1)
+        axs[-1][0].add_patch(
             plt.Circle((0, 0), self.max_concentricity,
                        fill=False, label='tolerance',
                        color='red', alpha=0.5, zorder=-1)
         )
+        axs[-1][1].hist(abs(finals), bins=31)
 
         # calculate how many are outside the circle and report as a percent
         out_of_range = (abs(finals.real) >= self.max_concentricity).sum()
         if out_of_range > 0:
             total = len(finals)
             percent_fail = 100 * out_of_range / total
-            axs[-1].text(x=0, y=self.max_concentricity,
-                         s=f'{percent_fail:.02f}% outside maximum total concentricity',
-                         color='red', horizontalalignment='center',
-                         verticalalignment='bottom')
+            axs[-1][0].text(x=0, y=self.max_concentricity,
+                            s=f'{percent_fail:.02f}% outside maximum total concentricity',
+                            color='red', horizontalalignment='center',
+                            verticalalignment='bottom')
+            axs[-1][1].axvline(self.max_concentricity, color='red')
 
-        for ax in axs:
-            ax.grid()
-            ax.set_aspect(1)
+        for i, ax in enumerate(axs):
+            axs[i][0].grid()
+            axs[i][0].set_aspect(1)
+
+            axs[i][1].set_xlim(0)
+            axs[i][1].set_ylim(0)
+            axs[i][1].grid()
 
         fig.tight_layout()
 
@@ -292,7 +299,7 @@ class StackPath:
 
 
 if __name__ == '__main__':
-    size = 1000
+    size = 10000
 
     # parts = [
     #     Part(name='part0',
@@ -340,7 +347,7 @@ if __name__ == '__main__':
              size=size
              ),
         Part(name='part1',
-             concentricity=0.003,
+             concentricity=0.005,
              limits=2.02,
              size=size
              ),
