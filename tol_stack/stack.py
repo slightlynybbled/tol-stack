@@ -85,6 +85,7 @@ class StackPath:
         :param part: An instance of ``Part``
         :return: None
         """
+        self._logger.info(f'adding part {part} to stack path')
         part.set_size(self.size)
 
         self.parts.append(part)
@@ -104,15 +105,26 @@ class StackPath:
         return self.parts
 
     def _refresh_parts(self):
+        self._logger.info('refreshing part lengths...')
         for part in self.parts:
             part.refresh()
             if part.lengths is None:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper length specification')
+        self._logger.info('refresh complete')
+
+    def show_dist(self):
+        if self.is_length:
+            return self.show_length_dist()
+        elif self.is_concentricity:
+            return self.show_concentricity_dist()
+        else:
+            return self.show_part_relative_dists()
 
     def show_part_relative_dists(self):
         self._refresh_parts()
 
+        self._logger.info('creating relative distribution image...')
         fig, axs = plt.subplots(len(self.parts), figsize=(6, 9), dpi=300,
                                 sharey=True)
         fig.suptitle('Relative Part Distributions')
@@ -138,6 +150,8 @@ class StackPath:
             ax.set_xlim(x0, x1)
 
         fig.tight_layout()
+
+        self._logger.info('relative distribution image creation complete!')
         return fig
 
     def show_length_dist(self):
@@ -145,6 +159,7 @@ class StackPath:
         # all parts have lengths associated with them
         self._refresh_parts()
 
+        self._logger.info('creating length distribution image...')
         fig, axs = plt.subplots(3, 1, figsize=(6, 9), dpi=300)
 
         axs[0].axvline(0, label='datum', alpha=0.6)
@@ -230,6 +245,8 @@ class StackPath:
             ax.grid()
 
         fig.tight_layout()
+
+        self._logger.info('length distribution image complete!')
         return fig
 
     def show_concentricity_dist(self):
@@ -239,6 +256,7 @@ class StackPath:
                 raise AttributeError(f'part "{part.name}" does not '
                                      f'have a proper concentricity specification')
 
+        self._logger.info('creating concentricity distribution image...')
         fig, axs = plt.subplots(len(self.parts) + 1, 2,
                                 figsize=(16, (len(self.parts) + 1) * 8), dpi=300)
 
@@ -295,6 +313,7 @@ class StackPath:
 
         fig.tight_layout()
 
+        self._logger.info('concentricity distribution image complete!')
         return fig
 
 

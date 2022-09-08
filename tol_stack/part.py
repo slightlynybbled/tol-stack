@@ -107,11 +107,11 @@ class Part:
     def __repr__(self):
         string = f'<Part name="{self.name}" dist="{self.distribution}"'
         if self.nominal_length:
-            string += f' nom={self.nominal_length:.03f}'
+            string += f' nom={self.nominal_length:.03g}'
         if self.concentricity:
-            string += f' concentricity={self.concentricity:.03f}'
+            string += f' concentricity={self.concentricity:.03g}'
         if self.tolerance:
-            string += f' \u00b1{self.tolerance:.03f}'
+            string += f' \u00b1{self.tolerance:.03g}'
 
         string += '>'
         return string

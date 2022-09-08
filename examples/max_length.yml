@@ -7,18 +7,14 @@ description: The assembly must have a clearance between the bottom
 
 max length: 0.975
 min length: 0.950
-image paths:
-  - examples/max_length_files/assembly0.png
-  - examples/max_length_files/assembly1.png
 
-size: 100000
+size: 1000
 
 parts:
   - Base:
       distribution: norm
       nominal length: 0.1
       tolerance: 0.01
-      image paths: examples/max_length_files/base0.png
       comment: assume this part will come in around nominal thickness and be used as-purchased;
           thus, expect a normal distribution of parts
   - Riser:
@@ -26,7 +22,6 @@ parts:
       skewiness: -4
       nominal length: 1.04
       tolerance: 0.01
-      image paths: examples/max_length_files/riser0.png
       comment: part will be machined down from stock; as a result of human factors,
           assume that there will be a skew in the parts provided as the machinist will
           stop machining when parts meet tolerance
@@ -35,6 +30,5 @@ parts:
       skewiness: -2
       nominal length: -0.17
       tolerance: 0.01
-      image paths: examples/max_length_files/arm0.png
       comment: part step to be machined down from stock; therefore, due to human factors, expect
           that there will be a slight skew to the distribution

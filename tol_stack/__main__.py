@@ -13,43 +13,38 @@ _logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option('file', '-f', multiple=True,
+@click.option('path', '-p',
               help='specify for each yml file against which to run a '
                    'report to implement')
-def main(file):
-    print(
+@click.option('output', '-o', default='output.png', help='output file (i.e. "out.png")')
+def main(path, output):
+    _logger.info(
+        '----------------------------------\n'
         f'Tolerance Stack Analyzer, v{__version__}\n'
         f'Jason R. Jones\n'
         '----------------------------------'
     )
 
-    paths = [Path(f) for f in file]
-    if not paths:
+    if not path:
         _logger.warning(f'no files found')
         return
 
-    for path in paths:
-        if not path.exists():
-            _logger.critical(f'file not found at "{path}"')
-            return
+    path = Path(path)
+    if not path.exists():
+        _logger.critical(f'file not found at "{path}"')
+        return
 
-    print(f'{len(paths)} files found for processing...')
+    parser = Parser()
+    parser.load_yaml(path)
+    stack = parser.stack
 
-    sleep(0.01)  # minor sleep to preserve console output order
-    for path in tqdm(paths):
-        parser = Parser()
-        parser.load_yaml(path)
-        stack = parser.stack
-        print(stack)
-        try:
-            StackupReport(stackpath=stack)
-        except PermissionError:
-            print('The file coulld not be opened.  Do you '
-                  'have the file open in another program?')
+    fig = stack.show_dist()
+    _logger.info(f'saving output to {output}')
+    fig.savefig(output)
 
-    sleep(0.01)  # minor sleep to preserve console output order
+    _logger.info('exiting...')
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
     main()

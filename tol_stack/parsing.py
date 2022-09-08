@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 import yaml
 
@@ -5,7 +6,10 @@ from tol_stack.stack import Part, StackPath
 
 
 class Parser:
-    def __init__(self):
+    def __init__(self, loglevel=logging.INFO):
+        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger.setLevel(loglevel)
+
         self._stack = None
 
     @property
@@ -13,6 +17,7 @@ class Parser:
         return self._stack
 
     def load_yaml(self, path: Path):
+        self._logger.info(f'parsing file at {path}...')
         with path.open(mode='r') as f:
             text = f.read()
 
@@ -27,12 +32,15 @@ class Parser:
         values = {k.strip().replace(' ', '_').lower(): v
                   for k, v in data.items()
                   if k.strip().lower() != 'parts'}
-        print(values)
+
+        self._logger.info('creating stack path...')
         self._stack = StackPath(**values)
 
+        self._logger.info('loading parts into stack...')
         for part in parts:
-            print(part)
             self._stack.add_part(part)
+
+        self._logger.info('stack creation complete!')
 
     def dump_yaml(self, path: Path):
         """
