@@ -3,7 +3,7 @@ description: The assembly must be concentric to within 0.02.
 
   The goal is to get 99.7% or greater of the assemblies to meet tolerance.
 
-size: 1000
+size: 100000
 
 concentricity: 0.02
 

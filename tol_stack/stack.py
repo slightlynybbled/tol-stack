@@ -105,7 +105,7 @@ class StackPath:
         return self.parts
 
     def _refresh_parts(self):
-        self._logger.info('refreshing part lengths...')
+        self._logger.info('refreshing parts...')
         for part in self.parts:
             part.refresh()
             if part.lengths is None:

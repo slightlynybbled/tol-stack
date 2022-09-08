@@ -1,12 +1,9 @@
 import logging
 from pathlib import Path
-from time import sleep
 
 import click
-from tqdm import tqdm
 
 from tol_stack.parsing import Parser
-from tol_stack.report import StackupReport
 from tol_stack.version import __version__
 
 _logger = logging.getLogger(__name__)
@@ -26,7 +23,8 @@ def main(path, output):
     )
 
     if not path:
-        _logger.warning(f'no files found')
+        _logger.warning(f'no files found; use the "-p" '
+                        f'option to specify a path to the file')
         return
 
     path = Path(path)
